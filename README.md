@@ -7,7 +7,7 @@ Simple JavaScript library to wrap the [OpenActive](https://www.openactive.io) JS
 ### Compatible Platforms and Browsers
 SKOS.js will run on any version of Node.js, and is built to use CommonJS so can be built with Webpack and Browserify.
 
-SKOS.js will run in IE 9 and above without transpilation, and all other major browsers.
+SKOS.js has been tested on IE 9 and above without transpilation or polyfills, and all other major browsers.
 
 ## Installation
 
@@ -38,7 +38,7 @@ if (response && response.statusCode == 200) {
 
 ### In the browser
 
-See the [live demo](./demo/).
+See the [live demo](https://www.openactive.io/skos.js/demo/).
 
 ```html
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
@@ -58,7 +58,7 @@ See the [live demo](./demo/).
 
 # API Reference
 Note this library is written in ES5 to provide client-side compatibility
-without requiring transpiling. It will work from IE9 upwards.
+without requiring transpiling. It has been tested on IE9 upwards.
 
 
 * [skos](#module_skos)
