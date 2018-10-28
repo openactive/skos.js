@@ -170,4 +170,11 @@ describe('The ConceptScheme', function () {
   it('returns null for concept not found by ID', function () {
     expect(scheme.getConceptByID('NOT FOUND')).toEqual(null);
   });
+  it('returns all concepts by label', function () {
+    // length + 1 due to altLabel being added to the byLabel list
+    expect(Object.keys(scheme.getAllConceptsByLabel()).length).toEqual(activityList.concept.length + 1);
+  });
+  it('returns all concepts by ID', function () {
+    expect(Object.keys(scheme.getAllConceptsByID()).length).toEqual(activityList.concept.length);
+  });
 });
