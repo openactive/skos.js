@@ -9,7 +9,7 @@
     "lint": "eslint \"src/**/*.js\"",
     "lint-fix": "eslint --fix \"src/**/*.js\"",
     "test": "npm run test-no-lint",
-    "test-no-lint": "jasmine",
+    "test-no-lint": "nyc jasmine && nyc report --reporter=text-lcov | coveralls",
     "test-debug": "node --inspect-brk -i ./node_modules/jasmine/bin/jasmine.js",
     "docs": "jsdoc2md -t jsdoc2md/README.hbs src/skos.js > README.md; echo",
     "minify": "google-closure-compiler src/skos.js > dist/skos.min.js",
@@ -32,12 +32,14 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
+    "coveralls": "^3.0.2",
     "eslint": "^5.8.0",
     "eslint-config-airbnb-es5": "^1.2.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-react": "^7.11.1",
     "google-closure-compiler": "^20181008.0.0",
     "jasmine": "^3.3.0",
-    "jsdoc-to-markdown": "^4.0.1"
+    "jsdoc-to-markdown": "^4.0.1",
+    "nyc": "^13.1.0"
   }
 }
