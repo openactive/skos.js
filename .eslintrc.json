@@ -1,0 +1,12 @@
+{
+  "extends": "eslint-config-airbnb-es5",
+  "env": {
+    "node": true,
+    "jasmine": true
+  },
+  "rules": {
+    "max-len": "off",
+    "no-restricted-syntax": 0,
+    "func-names": "off"
+  }
+}

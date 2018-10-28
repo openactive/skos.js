@@ -1,0 +1,20 @@
+# Tests
+spec
+src/**/*[sS]pec.js
+
+# Browser version
+dist
+demo
+
+# Docs
+jsdoc2md
+
+# CI
+.travis.yml
+.nvmrc
+
+# Linters
+.eslintrc*
+
+# Editor settings
+.editorconfig

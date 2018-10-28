@@ -1,0 +1,43 @@
+{
+  "name": "skos",
+  "version": "1.0.0",
+  "description": "Simple JavaScript library to wrap OpenActive SKOS objects",
+  "homepage": "https://github.com/openactive/skos.js#readme",
+  "main": "src/index.js",
+  "scripts": {
+    "pretest": "npm run lint",
+    "lint": "eslint \"src/**/*.js\"",
+    "lint-fix": "eslint --fix \"src/**/*.js\"",
+    "test": "npm run test-no-lint",
+    "test-no-lint": "jasmine",
+    "test-debug": "node --inspect-brk -i ./node_modules/jasmine/bin/jasmine.js",
+    "docs": "jsdoc2md -t jsdoc2md/README.hbs src/skos.js > README.md; echo",
+    "minify": "google-closure-compiler src/skos.js > dist/skos.min.js",
+    "build": "npm run docs && npm run minify",
+    "postpublish-": "git push",
+    "publish-patch": "npm test && git pull && git push && npm version patch && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openactive/skos.js.git"
+  },
+  "keywords": [
+    "openactive",
+    "skos"
+  ],
+  "author": "Nick Evans",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/openactive/skos.js/issues"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
+    "eslint-config-airbnb-es5": "^1.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-react": "^7.11.1",
+    "google-closure-compiler": "^20181008.0.0",
+    "jasmine": "^3.3.0",
+    "jsdoc-to-markdown": "^4.0.1"
+  }
+}
