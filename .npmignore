@@ -11,6 +11,7 @@ jsdoc2md
 
 # CI
 .travis.yml
+.coveralls.yml
 .nvmrc
 
 # Linters
