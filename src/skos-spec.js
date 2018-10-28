@@ -9,10 +9,10 @@ var activityList = {
   license: 'https://creativecommons.org/licenses/by/4.0/',
   concept: [
     {
-      id: 'https://openactive.io/activity-list#1',
+      id: 'https://openactive.io/activity-list#1.2.2',
       type: 'Concept',
-      prefLabel: '#1',
-      topConceptOf: 'https://openactive.io/activity-list'
+      prefLabel: '#1.2.2',
+      broaderTransitive: 'https://openactive.io/activity-list#1.2'
     },
     {
       id: 'https://openactive.io/activity-list#2',
@@ -21,10 +21,10 @@ var activityList = {
       topConceptOf: 'https://openactive.io/activity-list'
     },
     {
-      id: 'https://openactive.io/activity-list#1.1',
+      id: 'https://openactive.io/activity-list#1',
       type: 'Concept',
-      prefLabel: '#1.1',
-      broader: ['https://openactive.io/activity-list#1']
+      prefLabel: '#1',
+      topConceptOf: 'https://openactive.io/activity-list'
     },
     {
       id: 'https://openactive.io/activity-list#1.2',
@@ -34,22 +34,31 @@ var activityList = {
       related: ['https://openactive.io/activity-list#1']
     },
     {
+      id: 'https://openactive.io/activity-list#1.1',
+      type: 'Concept',
+      prefLabel: '#1.1',
+      broader: ['https://openactive.io/activity-list#1']
+    },
+    {
       id: 'https://openactive.io/activity-list#1.2.1',
       type: 'Concept',
       prefLabel: '#1.2.1',
       broader: 'https://openactive.io/activity-list#1.2',
       altLabel: ['#42']
-    },
-    {
-      id: 'https://openactive.io/activity-list#1.2.2',
-      type: 'Concept',
-      prefLabel: '#1.2.2',
-      broaderTransitive: 'https://openactive.io/activity-list#1.2'
     }
   ]
 };
 
-var scheme = new ConceptScheme(activityList);
+describe('A new ConceptScheme', function () {
+  it('can be created from ConceptScheme JSON', function () {
+    var scheme = new ConceptScheme(activityList);
+    expect(scheme.getAllConcepts().length).toEqual(activityList.concept.length);
+  });
+  it('can be created from Concept array', function () {
+    var scheme = new ConceptScheme(activityList.concept, 'https://openactive.io/activity-list');
+    expect(scheme.getAllConcepts().length).toEqual(activityList.concept.length);
+  });
+});
 
 function oa(id) {
   return 'https://openactive.io/activity-list#' + id;
@@ -60,6 +69,10 @@ function getIds(concepts) {
 }
 
 describe('The concept 1', function () {
+  var scheme;
+  beforeEach(function setupScheme() {
+    scheme = new ConceptScheme(activityList);
+  });
   it('is in topConcepts', function () {
     var ids = getIds(scheme.getTopConcepts());
     expect(ids).toContain(oa('1'));
@@ -87,6 +100,10 @@ describe('The concept 1', function () {
 });
 
 describe('The concept 1.2', function () {
+  var scheme;
+  beforeEach(function setupScheme() {
+    scheme = new ConceptScheme(activityList);
+  });
   it('has a narrower of 1.2.1', function () {
     var ids = getIds(scheme.getConceptByID(oa('1.2')).getNarrower());
     expect(ids).toContain(oa('1.2.1'));
@@ -106,6 +123,10 @@ describe('The concept 1.2', function () {
 });
 
 describe('The concept 1.2.1', function () {
+  var scheme;
+  beforeEach(function setupScheme() {
+    scheme = new ConceptScheme(activityList);
+  });
   it('has a broaderTransitive of 1', function () {
     var ids = getIds(scheme.getConceptByID(oa('1.2.1')).getBroaderTransitive());
     expect(ids).toContain(oa('1'));
@@ -132,6 +153,10 @@ var expectedString = `- #1
 - #2`;
 
 describe('The ConceptScheme', function () {
+  var scheme;
+  beforeEach(function setupScheme() {
+    scheme = new ConceptScheme(activityList);
+  });
   it('has two topConcepts', function () {
     var ids = getIds(scheme.getTopConcepts());
     expect(ids.length).toEqual(2);

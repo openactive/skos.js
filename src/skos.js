@@ -44,7 +44,7 @@ function ConceptScheme(scheme, id) {
 
   // Construct from scheme from array if needed
   if (Array.isArray(scheme) && validateConcepts(scheme)) {
-    if (typeof schemeId === 'undefined') throw new Error('ID must be supplied with Concept array');
+    if (typeof id === 'undefined') throw new Error('ID must be supplied with Concept array');
     this.scheme = {
       'type': 'ConceptScheme',
       'id': id,
