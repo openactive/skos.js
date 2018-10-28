@@ -177,4 +177,7 @@ describe('The ConceptScheme', function () {
   it('returns all concepts by ID', function () {
     expect(Object.keys(scheme.getAllConceptsByID()).length).toEqual(activityList.concept.length);
   });
+  it('returns JSON containing the same concept array', function () {
+    expect(scheme.getJSON().concept).toEqual(activityList.concept);
+  });
 });
