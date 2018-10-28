@@ -58,6 +58,12 @@ describe('A new ConceptScheme', function () {
     var scheme = new ConceptScheme(activityList.concept, 'https://openactive.io/activity-list');
     expect(scheme.getAllConcepts().length).toEqual(activityList.concept.length);
   });
+  it('throws error for Concept array without ID', function () {
+    expect( function () {
+      var scheme = new ConceptScheme(activityList.concept);
+      scheme.getNarrowerTransitive('');
+    } ).toThrow(new Error('ID must be supplied with Concept array'));
+  });
 });
 
 describe('An invalid ConceptScheme', function () {

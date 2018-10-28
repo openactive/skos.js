@@ -26,6 +26,11 @@
     "openactive",
     "skos"
   ],
+  "nyc": {
+    "exclude": [
+      "**/*-spec.js"
+    ]
+  },
   "author": "Nick Evans",
   "license": "MIT",
   "bugs": {
