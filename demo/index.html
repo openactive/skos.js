@@ -50,13 +50,13 @@
   <script type="text/javascript">
     $(function() {
       $.getJSON('https://www.openactive.io/activity-list/activity-list.jsonld', function(activityListJsonObject) {
-        var t0a = performance && performance.now ? performance.now() : null;
-        var scheme = new skos.ConceptScheme(activityListJsonObject);
-        var t1a = performance && performance.now ? performance.now() : null;
-        var t0b = performance && performance.now ? performance.now() : null;
-        var concepts = scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
-        var t1b = performance && performance.now ? performance.now() : null;
-        if (t1a && t0a && t1b && t0b) {
+        if (typeof performance !== 'undefined' && typeof performance.now !== 'undefined') {
+          var t0a =  performance.now();
+          var scheme = new skos.ConceptScheme(activityListJsonObject);
+          var t1a = performance.now();
+          var t0b = performance.now();
+          var concepts = scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
+          var t1b = performance.now();
           $('#activity-list').append(
             '<p class="small">ConceptScheme list load in ' + Math.round((t1a - t0a)*100)/100 + ' ms</p>',
             '<p class="small">Concept.getNarrowerTransitive results in ' + Math.round((t1b - t0b)*100)/100 + ' ms</p>'
