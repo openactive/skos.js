@@ -60,6 +60,68 @@ describe('A new ConceptScheme', function () {
   });
 });
 
+describe('An invalid ConceptScheme', function () {
+  it('throws error for duplicate broader references', function () {
+    expect( function () {
+      var scheme = new ConceptScheme(activityList.concept.concat([{
+        id: 'https://openactive.io/activity-list#1.3',
+        type: 'Concept',
+        prefLabel: '#1.3',
+        broaderTransitive: ['https://openactive.io/activity-list#1', 'https://openactive.io/activity-list#1']
+      }]), 'https://openactive.io/activity-list');
+      scheme.getNarrowerTransitive('');
+    } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme: Concept "https://openactive.io/activity-list#1.3" has duplicated broader references to "https://openactive.io/activity-list#1"'));
+  });
+  it('throws error for duplicate related references', function () {
+    expect( function () {
+      var scheme = new ConceptScheme(activityList.concept.concat([{
+        id: 'https://openactive.io/activity-list#1.3',
+        type: 'Concept',
+        prefLabel: '#1.3',
+        related: ['https://openactive.io/activity-list#1', 'https://openactive.io/activity-list#1']
+      }]), 'https://openactive.io/activity-list');
+      scheme.getNarrowerTransitive('');
+    } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme: Concept "https://openactive.io/activity-list#1.3" has duplicated related references to "https://openactive.io/activity-list#1"'));
+  });
+  it('throws error for bad inputs', function () {
+    expect( function () {
+      var scheme = new ConceptScheme(null, '?');
+      scheme.getNarrowerTransitive('');
+    } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme'));
+  });
+  it('throws error for bad broader references', function () {
+    expect( function () {
+      var scheme = new ConceptScheme(activityList.concept.concat([{
+        id: 'https://openactive.io/activity-list#3',
+        type: 'Concept',
+        prefLabel: '#3',
+        broaderTransitive: ['i-dont-exist']
+      }]), 'https://openactive.io/activity-list');
+      scheme.getNarrowerTransitive('');
+    } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme: Concept "https://openactive.io/activity-list#3" has referenced broader Concept "i-dont-exist", which was not found in scheme'));
+  });
+  it('throws error for bad related references', function () {
+    expect( function () {
+      var scheme = new ConceptScheme(activityList.concept.concat([{
+        id: 'https://openactive.io/activity-list#3',
+        type: 'Concept',
+        prefLabel: '#3',
+        related: ['i-dont-exist']
+      }]), 'https://openactive.io/activity-list');
+      scheme.getNarrowerTransitive('');
+    } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme: Concept "https://openactive.io/activity-list#3" has referenced related Concept "i-dont-exist", which was not found in scheme'));
+  });
+  it('throws error for invalid concept', function () {
+    expect( function () {
+      var scheme = new ConceptScheme(activityList.concept.concat([{
+        id: 'https://openactive.io/activity-list#bad-concept',
+        type: 'Concept'
+      }]), 'https://openactive.io/activity-list');
+      scheme.getNarrowerTransitive('');
+    } ).toThrow(new Error('Invalid concept: "https://openactive.io/activity-list#bad-concept"'));
+  });
+});
+
 function oa(id) {
   return 'https://openactive.io/activity-list#' + id;
 }

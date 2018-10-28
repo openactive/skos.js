@@ -39,7 +39,7 @@ function ConceptScheme(scheme, id) {
       'id': id,
       'concept': scheme
     };
-  } else if (typeof scheme === 'object' && typeof scheme.concept !== 'undefined' && typeof scheme.id !== 'undefined' && scheme.type === 'ConceptScheme') {
+  } else if (typeof scheme === 'object' && scheme !== null && typeof scheme.concept !== 'undefined' && typeof scheme.id !== 'undefined' && scheme.type === 'ConceptScheme') {
     this.scheme = scheme;
   } else {
     throw new Error('Invalid scheme supplied to ConceptScheme');
@@ -80,23 +80,32 @@ function ConceptScheme(scheme, id) {
   // Add ._broaderConcepts to all Concepts, throwing error for graph inconsistencies
   for (var k = 0; k < conceptArray.length; k++) {
     concept = conceptArray[k];
+    var conceptBroaderDupCheck = {};
     var broader = concept._originalConcept.broader || concept._originalConcept.broaderTransitive || [];
     if (!Array.isArray(broader)) broader = [broader];
     for (var l = 0; l < broader.length; l++) {
       var broaderConceptId = broader[l];
-      if (conceptIndex[broaderConceptId]) {
-        concept._broaderConcepts.push(conceptIndex[broaderConceptId]);
+
+      if (!conceptIndex[broaderConceptId]) {
+        throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has referenced broader Concept "' + broaderConceptId + '", which was not found in scheme');
+      } else if (conceptBroaderDupCheck[broaderConceptId] === true) {
+        throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated broader references to "' + broaderConceptId + '"');
       } else {
-        throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept "' + broaderConceptId + '" not found in scheme');
+        concept._broaderConcepts.push(conceptIndex[broaderConceptId]);
+        conceptBroaderDupCheck[broaderConceptId] = true;
       }
     }
     if (concept._originalConcept.related && Array.isArray(concept._originalConcept.related)) {
+      var conceptRelatedDupCheck = {};
       for (var m = 0; m < concept._originalConcept.related.length; m++) {
         var relatedConceptId = concept._originalConcept.related[m];
-        if (conceptIndex[relatedConceptId]) {
-          concept._relatedConcepts.push(conceptIndex[relatedConceptId]);
+        if (!conceptIndex[relatedConceptId]) {
+          throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has referenced related Concept "' + relatedConceptId + '", which was not found in scheme');
+        } else if (conceptRelatedDupCheck[relatedConceptId] === true) {
+          throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated related references to "' + relatedConceptId + '"');
         } else {
-          throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept "' + relatedConceptId + '" not found in scheme');
+          concept._relatedConcepts.push(conceptIndex[relatedConceptId]);
+          conceptRelatedDupCheck[relatedConceptId] = true;
         }
       }
     }
@@ -237,7 +246,7 @@ ConceptScheme.prototype.toString = function toString() {
  */
 function Concept(concept) {
   if (!(concept.prefLabel && concept.id && concept.type === 'Concept')) {
-    throw new Error('Invalid concept: ' + concept.id);
+    throw new Error('Invalid concept: "' + concept.id + '"');
   }
   this.id = concept.id;
   this.prefLabel = concept.prefLabel;
