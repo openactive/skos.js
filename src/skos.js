@@ -87,7 +87,7 @@ function ConceptScheme(scheme, id) {
       if (conceptIndex[broaderConceptId]) {
         concept._broaderConcepts.push(conceptIndex[broaderConceptId]);
       } else {
-        throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept ' + broaderConceptId + 'not found in scheme');
+        throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept "' + broaderConceptId + '" not found in scheme');
       }
     }
     if (concept._originalConcept.related && Array.isArray(concept._originalConcept.related)) {
@@ -96,7 +96,7 @@ function ConceptScheme(scheme, id) {
         if (conceptIndex[relatedConceptId]) {
           concept._relatedConcepts.push(conceptIndex[relatedConceptId]);
         } else {
-          throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept ' + relatedConceptId + 'not found in scheme');
+          throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept "' + relatedConceptId + '" not found in scheme');
         }
       }
     }
