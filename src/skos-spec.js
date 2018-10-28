@@ -12,7 +12,7 @@ var activityList = {
       id: 'https://openactive.io/activity-list#1.2.2',
       type: 'Concept',
       prefLabel: '#1.2.2',
-      broaderTransitive: 'https://openactive.io/activity-list#1.2'
+      broader: 'https://openactive.io/activity-list#1.2'
     },
     {
       id: 'https://openactive.io/activity-list#2',
@@ -30,7 +30,7 @@ var activityList = {
       id: 'https://openactive.io/activity-list#1.1',
       type: 'Concept',
       prefLabel: '#1.1',
-      broader: ['https://openactive.io/activity-list#1']
+      broaderTransitive: ['https://openactive.io/activity-list#1']
     },
     {
       id: 'https://openactive.io/activity-list#1.2',
@@ -43,7 +43,7 @@ var activityList = {
       id: 'https://openactive.io/activity-list#1.2.1',
       type: 'Concept',
       prefLabel: '#1.2.1',
-      broader: 'https://openactive.io/activity-list#1.2',
+      broader: ['https://openactive.io/activity-list#1.2', 'https://openactive.io/activity-list#1'],
       altLabel: ['#42']
     }
   ]
@@ -92,6 +92,12 @@ describe('The concept 1', function () {
   it('has a narrowerTransitive of 1.2.1', function () {
     var ids = getIds(scheme.getConceptByID(oa('1')).getNarrowerTransitive());
     expect(ids).toContain(oa('1.2.1'));
+  });
+  it('has a narrowerTransitive deduped so of length 4', function () {
+    expect(scheme.getConceptByID(oa('1')).getNarrowerTransitive().length).toEqual(4);
+  });
+  it('has a narrower deduped so of length 2', function () {
+    expect(scheme.getConceptByID(oa('1')).getNarrower().length).toEqual(3);
   });
   it('is in allConcepts', function () {
     var ids = getIds(scheme.getAllConcepts());
@@ -150,6 +156,7 @@ var expectedString = `- #1
   - #1.2
     - #1.2.1
     - #1.2.2
+  - #1.2.1
 - #2`;
 
 describe('The ConceptScheme', function () {
