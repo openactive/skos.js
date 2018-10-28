@@ -276,10 +276,11 @@ Concept.prototype.getNarrower = function getNarrower() {
  */
 Concept.prototype.getNarrowerTransitive = function getNarrowerTransitive() {
   function setConceptsOnMap(concept, map) {
-    concept._narrowerConcepts.forEach(function (narrowerConcept) {
+    for (var i = 0; i < concept._narrowerConcepts.length; i++) {
+      var narrowerConcept = concept._narrowerConcepts[i];
       map[narrowerConcept.id] = narrowerConcept;
       setConceptsOnMap(narrowerConcept, map);
-    });
+    }
     return map;
   }
   // Dedup results into a map
@@ -314,10 +315,11 @@ Concept.prototype.getBroader = function getBroader() {
  */
 Concept.prototype.getBroaderTransitive = function getBroaderTransitive() {
   function setConceptsOnMap(concept, map) {
-    concept._broaderConcepts.forEach(function (broaderConcept) {
+    for (var i = 0; i < concept._broaderConcepts.length; i++) {
+      var broaderConcept = concept._broaderConcepts[i];
       map[broaderConcept.id] = broaderConcept;
       setConceptsOnMap(broaderConcept, map);
-    });
+    }
     return map;
   }
   // Dedup results into a map
