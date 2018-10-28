@@ -7,7 +7,7 @@
 
 /**
  * Note this library is written in ES5 to provide client-side compatibility
- * without requiring transpiling. It will work from IE9 upwards.
+ * without requiring transpiling. It has been tested on IE9 upwards.
  * @module skos
  */
 
