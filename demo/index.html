@@ -56,20 +56,14 @@
         var t0b = performance ? performance.now() : null;
         var concepts = scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
         var t1b = performance ? performance.now() : null;
-        if (performance) {
-          $('#activity-list').append($('<p>', {
-            text: 'ConceptScheme list load in ' + (t1a - t0a).toFixed(2) + ' ms',
-            class: 'small'
-          }));
-          $('#activity-list').append($('<p>', {
-            text: 'Concept.getNarrowerTransitive in ' + (t1b - t0b).toFixed(2) + ' ms',
-            class: 'small'
-          }));
+        if (t1a && t0a && t1b && t0b) {
+          $('#activity-list').append(
+            '<p class="small">ConceptScheme list load in ' + Math.round((t1a - t0a)*100)/100 + ' ms</p>',
+            '<p class="small">Concept.getNarrowerTransitive results in ' + Math.round((t1b - t0b)*100)/100 + ' ms</p>'
+          );
         }
         $.each(concepts, function(index, concept) {
-          $('#activity-list').append($('<p>', {
-            text: concept.prefLabel
-          }));
+          $('#activity-list').append('<p>' + concept.prefLabel + '</p>');
         });
       });
     });
