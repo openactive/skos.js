@@ -118,14 +118,14 @@ ConceptScheme constructor.
 ```js
 // returns Concept for American Football
 var activityListJsonObject = JSON.parse(response.getBody('utf8'));
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByID('https://openactive.io/activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
 ```
 **Example**  
 ```js
 // returns ConceptScheme for a provided custom subset of the Activity List
 var activityListConceptArray = myApiResult.items;
-var scheme = new ConceptScheme(activityListConceptArray, 'https://openactive.io/activity-list');
+var scheme = new skos.ConceptScheme(activityListConceptArray, 'https://openactive.io/activity-list');
 return scheme;
 ```
 <a name="module_skos..ConceptScheme+getConceptByID"></a>
@@ -145,13 +145,13 @@ This will handle IDs with and without prefixes for OpenActive controlled vocabul
 **Example**  
 ```js
 // returns Concept for American Football
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByID('https://openactive.io/activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
 ```
 **Example**  
 ```js
 // returns Concept for American Football using a prefixed ID
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByID('oa:activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
 ```
 <a name="module_skos..ConceptScheme+getConceptByLabel"></a>
@@ -171,7 +171,7 @@ This will return a case-sensitive exact match based on the prefLabel and altLabe
 **Example**  
 ```js
 // returns Concept for American Football
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByLabel('American Football');
 ```
 <a name="module_skos..ConceptScheme+getAllConcepts"></a>
@@ -256,7 +256,7 @@ Get an array of immediately narrower concepts.
 **Example**  
 ```js
 // returns only the types of Yoga that are one level below "Yoga"
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByLabel('Yoga').getNarrower();
 ```
 <a name="module_skos..Concept+getNarrowerTransitive"></a>
@@ -269,7 +269,7 @@ Get an array of all narrower concepts following transitivity (all children).
 **Example**  
 ```js
 // returns all type of Yoga
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
 ```
 <a name="module_skos..Concept+getBroader"></a>
@@ -282,7 +282,7 @@ Get an array of immediately broader concepts.
 **Example**  
 ```js
 // returns only the next level up in the hierarchy
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByLabel('Yoga')getBroader();
 ```
 <a name="module_skos..Concept+getBroaderTransitive"></a>
@@ -295,7 +295,7 @@ Get an array of all broader concepts following transitivity (all parents).
 **Example**  
 ```js
 // returns all the higher level categories above Yoga
-var scheme = new ConceptScheme(activityListJsonObject);
+var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByLabel('Yoga').getBroaderTransitive();
 ```
 <a name="module_skos..Concept+getRelated"></a>
@@ -334,7 +334,7 @@ Compare two Concepts based on prefLabel, for use with native .sort()
 
 **Example**  
 ```js
-var sortedConcepts = concepts.sort(Concept.compare);
+var sortedConcepts = concepts.sort(skos.Concept.compare);
 ```
 
 * * *

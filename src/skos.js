@@ -17,13 +17,13 @@
  * @example
  * // returns Concept for American Football
  * var activityListJsonObject = JSON.parse(response.getBody('utf8'));
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByID('https://openactive.io/activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
  *
  * @example
  * // returns ConceptScheme for a provided custom subset of the Activity List
  * var activityListConceptArray = myApiResult.items;
- * var scheme = new ConceptScheme(activityListConceptArray, 'https://openactive.io/activity-list');
+ * var scheme = new skos.ConceptScheme(activityListConceptArray, 'https://openactive.io/activity-list');
  * return scheme;
  *
  * @constructor
@@ -122,12 +122,12 @@ function ConceptScheme(scheme, id) {
  *
  * @example
  * // returns Concept for American Football
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByID('https://openactive.io/activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
  *
  * @example
  * // returns Concept for American Football using a prefixed ID
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByID('oa:activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
  *
  * @param {String} id  The id of the Concept
@@ -152,7 +152,7 @@ ConceptScheme.prototype.getConceptByID = function getConceptByID(id) {
  *
  * @example
  * // returns Concept for American Football
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByLabel('American Football');
  *
  * @param {String} label  The label of the Concept
@@ -255,7 +255,7 @@ function Concept(concept) {
  *
  * @example
  * // returns only the types of Yoga that are one level below "Yoga"
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByLabel('Yoga').getNarrower();
  *
  * @return {Array} an array of Concept
@@ -269,7 +269,7 @@ Concept.prototype.getNarrower = function getNarrower() {
  *
  * @example
  * // returns all type of Yoga
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
  *
  * @return {Array} an array of Concept
@@ -294,7 +294,7 @@ Concept.prototype.getNarrowerTransitive = function getNarrowerTransitive() {
  *
  * @example
  * // returns only the next level up in the hierarchy
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByLabel('Yoga')getBroader();
  *
  * @return {Array} an array of Concept
@@ -308,7 +308,7 @@ Concept.prototype.getBroader = function getBroader() {
  *
  * @example
  * // returns all the higher level categories above Yoga
- * var scheme = new ConceptScheme(activityListJsonObject);
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
  * return scheme.getConceptByLabel('Yoga').getBroaderTransitive();
  *
  * @return {Array} an array of Concept
@@ -341,7 +341,7 @@ Concept.prototype.getRelated = function getRelated() {
  * Compare two Concepts based on prefLabel, for use with native .sort()
  *
  * @example
- * var sortedConcepts = concepts.sort(Concept.compare);
+ * var sortedConcepts = concepts.sort(skos.Concept.compare);
  *
  * @param {Object} a  Concept A
  * @param {Object} b  Concept B
@@ -380,7 +380,7 @@ var skos = {
   // Establish the root object, `window` in the browser, or `global` on the server.
   var root = this;
 
-  // Export the Underscore object for **CommonJS**, with backwards-compatibility
+  // Export the skos object for **CommonJS**, with backwards-compatibility
   // for the old `require()` API. If we're not in CommonJS, add `skos` to the
   // global object.
   if (typeof module !== 'undefined' && module.exports) {
