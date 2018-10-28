@@ -1,7 +1,5 @@
-[![view on npm](http://img.shields.io/npm/v/handbrake-js.svg)](https://www.npmjs.org/package/handbrake-js)
-[![npm module downloads](http://img.shields.io/npm/dt/handbrake-js.svg)](https://www.npmjs.org/package/handbrake-js)
-[![Build Status](https://travis-ci.org/75lb/handbrake-js.svg?branch=master)](https://travis-ci.org/75lb/handbrake-js)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
+[![Build Status](https://travis-ci.org/openactive/skos.js.svg?branch=master)](https://travis-ci.org/openactive/skos.js)
+[![Coverage Status](https://coveralls.io/repos/github/openactive/skos.js/badge.svg?branch=master)](https://coveralls.io/github/openactive/skos.js?branch=master)
 
 # SKOS.js
 Simple JavaScript library to wrap the [OpenActive](https://www.openactive.io) JSON-LD representation of [SKOS](https://www.w3.org/TR/skos-reference).
