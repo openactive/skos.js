@@ -39,7 +39,7 @@ function ConceptScheme(scheme, id) {
       'id': id,
       'concept': scheme
     };
-  } else if (scheme.concept && scheme.id && scheme.type === 'ConceptScheme') {
+  } else if (typeof scheme === 'object' && typeof scheme.concept !== 'undefined' && typeof scheme.id !== 'undefined' && scheme.type === 'ConceptScheme') {
     this.scheme = scheme;
   } else {
     throw new Error('Invalid scheme supplied to ConceptScheme');
