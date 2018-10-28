@@ -16,7 +16,7 @@
     "minify": "google-closure-compiler src/skos.js > dist/skos.min.js",
     "build": "npm run docs && npm run minify",
     "postpublish": "git push",
-    "publish-patch": "npm test && git pull && git push && npm version patch && npm publish"
+    "publish-patch": "npm test && npm run build && git pull && git push && npm version patch && npm publish"
   },
   "repository": {
     "type": "git",
