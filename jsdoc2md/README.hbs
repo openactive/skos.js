@@ -24,7 +24,7 @@ $ npm install @openactive/skos --save
 Now you can begin using it on either the client or server side.
 
 ```js
-var ConceptScheme = require('skos').ConceptScheme;
+var skos = require('@openactive/skos');
 
 // returns an array of the names of all types of Yoga
 var response = request('GET', 'https://openactive.io/activity-list', { headers: { accept: 'application/ld+json' } });
