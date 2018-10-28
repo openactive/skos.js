@@ -27,17 +27,17 @@ var activityList = {
       topConceptOf: 'https://openactive.io/activity-list'
     },
     {
+      id: 'https://openactive.io/activity-list#1.1',
+      type: 'Concept',
+      prefLabel: '#1.1',
+      broader: ['https://openactive.io/activity-list#1']
+    },
+    {
       id: 'https://openactive.io/activity-list#1.2',
       type: 'Concept',
       prefLabel: '#1.2',
       broaderTransitive: ['https://openactive.io/activity-list#1'],
       related: ['https://openactive.io/activity-list#1']
-    },
-    {
-      id: 'https://openactive.io/activity-list#1.1',
-      type: 'Concept',
-      prefLabel: '#1.1',
-      broader: ['https://openactive.io/activity-list#1']
     },
     {
       id: 'https://openactive.io/activity-list#1.2.1',
