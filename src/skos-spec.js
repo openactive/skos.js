@@ -164,4 +164,10 @@ describe('The ConceptScheme', function () {
   it('has the expected string output', function () {
     expect(scheme.toString()).toEqual(expectedString);
   });
+  it('returns null for concept not found by label', function () {
+    expect(scheme.getConceptByLabel('NOT FOUND')).toEqual(null);
+  });
+  it('returns null for concept not found by ID', function () {
+    expect(scheme.getConceptByID('NOT FOUND')).toEqual(null);
+  });
 });
