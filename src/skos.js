@@ -31,26 +31,15 @@
  * @param {String} [id] The scheme id, only required if an array is provided for scheme
  */
 function ConceptScheme(scheme, id) {
-  function validateConcepts(concepts) {
-    for (var i = 0; i < concepts.length; i++) {
-      if (!validateConcept(concepts[i])) return false;
-    }
-    return true;
-  }
-
-  function validateConcept(concept) {
-    return concept.prefLabel && concept.id && concept.type === 'Concept';
-  }
-
   // Construct from scheme from array if needed
-  if (Array.isArray(scheme) && validateConcepts(scheme)) {
+  if (Array.isArray(scheme)) {
     if (typeof id === 'undefined') throw new Error('ID must be supplied with Concept array');
     this.scheme = {
       'type': 'ConceptScheme',
       'id': id,
       'concept': scheme
     };
-  } else if (scheme.concept && scheme.id && scheme.type === 'ConceptScheme' && validateConcepts(scheme.concept)) {
+  } else if (scheme.concept && scheme.id && scheme.type === 'ConceptScheme') {
     this.scheme = scheme;
   } else {
     throw new Error('Invalid scheme supplied to ConceptScheme');
@@ -58,64 +47,68 @@ function ConceptScheme(scheme, id) {
 
   // Create list of parent ConceptScheme
   var topConcepts = [];
-  var conceptIndex = {};
   var labelIndex = {};
+  var conceptIndex = {};
+  var conceptArray = [];
+
+  // Declaire once for the following loops
+  var concept;
 
   // Create an index of all concepts by ID
-  var localSchemeId = this.scheme.id;
-  this.scheme.concept.forEach(function setIndex(concept) {
-    var conceptObj = new Concept(concept);
+  for (var i = 0; i < this.scheme.concept.length; i++) {
+    concept = new Concept(this.scheme.concept[i]);
 
     // Add to indexes
-    conceptIndex[concept.id] = conceptObj;
-    labelIndex[concept.prefLabel] = conceptObj;
+    conceptIndex[concept.id] = concept;
+    labelIndex[concept.prefLabel] = concept;
+    conceptArray.push(concept);
 
     // Add altLabels to prefLabel index. Ignore hidden labels,
     // as a good autocomplete will handle fuzzy matching.
     if (concept.altLabel && Array.isArray(concept.altLabel)) {
-      concept.altLabel.forEach(function (label) {
-        labelIndex[label] = conceptObj;
-      });
+      for (var j = 0; j < concept.altLabel.length; j++) {
+        labelIndex[concept.altLabel[j]] = concept;
+      }
     }
 
     // If topConcept then also add to topConcepts
-    if (concept.topConceptOf === localSchemeId) {
-      topConcepts.push(conceptObj);
+    if (this.scheme.concept[i].topConceptOf === this.scheme.id) {
+      topConcepts.push(concept);
     }
-  });
+  }
 
   // Add ._broaderConcepts to all Concepts, throwing error for graph inconsistencies
-  Object.keys(conceptIndex).forEach(function (key) {
-    var concept = conceptIndex[key];
-    var conceptRaw = concept.getJSON();
-    var broader = conceptRaw.broader || conceptRaw.broaderTransitive || [];
-    if (conceptRaw.broader && !Array.isArray(conceptRaw.broader)) broader = [conceptRaw.broader];
-    if (conceptRaw.broaderTransitive && !Array.isArray(conceptRaw.broaderTransitive)) broader = [conceptRaw.broaderTransitive];
-    broader.forEach(function (broaderConceptId) {
+  for (var k = 0; k < conceptArray.length; k++) {
+    concept = conceptArray[k];
+    var broader = concept._originalConcept.broader || concept._originalConcept.broaderTransitive || [];
+    if (!Array.isArray(broader)) broader = [broader];
+    for (var l = 0; l < broader.length; l++) {
+      var broaderConceptId = broader[l];
       if (conceptIndex[broaderConceptId]) {
         concept._broaderConcepts.push(conceptIndex[broaderConceptId]);
       } else {
         throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept ' + broaderConceptId + 'not found in scheme');
       }
-    });
-    if (conceptRaw.related && Array.isArray(conceptRaw.related)) {
-      conceptRaw.related.forEach(function (relatedConceptId) {
+    }
+    if (concept._originalConcept.related && Array.isArray(concept._originalConcept.related)) {
+      for (var m = 0; m < concept._originalConcept.related.length; m++) {
+        var relatedConceptId = concept._originalConcept.related[m];
         if (conceptIndex[relatedConceptId]) {
           concept._relatedConcepts.push(conceptIndex[relatedConceptId]);
         } else {
           throw new Error('Invalid scheme supplied to ConceptScheme: referenced Concept ' + relatedConceptId + 'not found in scheme');
         }
-      });
+      }
     }
-  });
+  }
 
   // Add ._narrowerConcepts to all Concepts
-  Object.keys(conceptIndex).forEach(function (key) {
-    var concept = conceptIndex[key];
-    concept._broaderConcepts.forEach(function (broaderConcept) {
-      broaderConcept._narrowerConcepts.push(concept);
-    });
-  });
+  for (var n = 0; n < conceptArray.length; n++) {
+    concept = conceptArray[n];
+    for (var p = 0; p < concept._broaderConcepts.length; p++) {
+      concept._broaderConcepts[p]._narrowerConcepts.push(concept);
+    }
+  }
 
   this.topConcepts = topConcepts.sort(Concept.compare);
   this.index = conceptIndex;
@@ -178,7 +171,7 @@ ConceptScheme.prototype.getConceptByLabel = function getConceptByLabel(label) {
 ConceptScheme.prototype.getAllConcepts = function getAllConcepts() {
   var index = this.index;
   // Equivalent of Object.values() with wider browser support
-  return Object.keys(index).map(function (key) { return index[key]; }).sort(Concept.compare);
+  return (Object.values ? Object.values(index) : Object.keys(index).map(function (key) { return index[key]; })).sort(Concept.compare);
 };
 
 /**
@@ -243,6 +236,9 @@ ConceptScheme.prototype.toString = function toString() {
  * @param {Object} concept - A JSON Concept object
  */
 function Concept(concept) {
+  if (!(concept.prefLabel && concept.id && concept.type === 'Concept')) {
+    throw new Error('Invalid concept: ' + concept.id);
+  }
   this.id = concept.id;
   this.prefLabel = concept.prefLabel;
   this.altLabel = concept.altLabel;
@@ -289,7 +285,7 @@ Concept.prototype.getNarrowerTransitive = function getNarrowerTransitive() {
   // Dedup results into a map
   var map = setConceptsOnMap(this, {});
   // Equivalent of Object.values() with wider browser support
-  return Object.keys(map).map(function (key) { return map[key]; }).sort(Concept.compare);
+  return (Object.values ? Object.values(map) : Object.keys(map).map(function (key) { return map[key]; })).sort(Concept.compare);
 };
 
 /**
@@ -327,7 +323,7 @@ Concept.prototype.getBroaderTransitive = function getBroaderTransitive() {
   // Dedup results into a map
   var map = setConceptsOnMap(this, {});
   // Equivalent of Object.values() with wider browser support
-  return Object.keys(map).map(function (key) { return map[key]; }).sort(Concept.compare);
+  return (Object.values ? Object.values(map) : Object.keys(map).map(function (key) { return map[key]; })).sort(Concept.compare);
 };
 
 /**
