@@ -20,6 +20,10 @@
       width: 300px;
     }
 
+    .small {
+      font-size: 14px;
+    }
+
     button {
       background: #0084ff;
       border: none;
@@ -46,13 +50,22 @@
   <script type="text/javascript">
     $(function() {
       $.getJSON('https://www.openactive.io/activity-list/activity-list.jsonld', function(activityListJsonObject) {
-        var t0 = performance ? performance.now() : null;
+        var t0a = performance ? performance.now() : null;
         var scheme = new skos.ConceptScheme(activityListJsonObject);
+        var t1a = performance ? performance.now() : null;
+        var t0b = performance ? performance.now() : null;
         var concepts = scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
-        var t1 = performance ? performance.now() : null;
-        if (t0 && t1) $('#activity-list').append($('<small>', {
-          text: 'skos.js took ' + Math.round(t1 - t0) + ' milliseconds'
-        }));
+        var t1b = performance ? performance.now() : null;
+        if (performance) {
+          $('#activity-list').append($('<p>', {
+            text: 'ConceptScheme list load in ' + (t1a - t0a).toFixed(2) + ' ms',
+            class: 'small'
+          }));
+          $('#activity-list').append($('<p>', {
+            text: 'Concept.getNarrowerTransitive in ' + (t1b - t0b).toFixed(2) + ' ms',
+            class: 'small'
+          }));
+        }
         $.each(concepts, function(index, concept) {
           $('#activity-list').append($('<p>', {
             text: concept.prefLabel
