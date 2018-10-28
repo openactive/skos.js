@@ -48,7 +48,7 @@
       $.getJSON('https://www.openactive.io/activity-list/activity-list.jsonld', function(activityListJsonObject) {
         var scheme = new skos.ConceptScheme(activityListJsonObject);
         var concepts = scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
-        $.each(concept, function(index, concept) {
+        $.each(concepts, function(index, concept) {
           $('#activity-list').append($('<p>', {
             text: concept.prefLabel
           }));
