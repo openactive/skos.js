@@ -354,8 +354,8 @@ Concept.prototype.getRelated = function getRelated() {
 };
 
 /**
- * Return true if two Concepts are equal and of the same type
- * If a raw JSON Concept is supplied it is coerced into a Concept object
+ * Return true if two Concepts are equal and of the same type.
+ * If a raw JSON Concept is supplied it is coerced into a Concept object.
  *
  * @param {Object} concept  Concept to compare
  * @return {boolean} representing whether the two Concepts are equal
