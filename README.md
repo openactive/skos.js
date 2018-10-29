@@ -134,8 +134,6 @@ return scheme;
 #### conceptScheme.getConceptByID(id) ⇒ <code>Object</code>
 Get Concept by ID
 
-This will handle IDs with and without prefixes for OpenActive controlled vocabularies
-
 **Kind**: instance method of [<code>ConceptScheme</code>](#module_skos..ConceptScheme)  
 **Returns**: <code>Object</code> - the Concept, or null if no matching concept exists  
 
@@ -148,12 +146,6 @@ This will handle IDs with and without prefixes for OpenActive controlled vocabul
 // returns Concept for American Football
 var scheme = new skos.ConceptScheme(activityListJsonObject);
 return scheme.getConceptByID('https://openactive.io/activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
-```
-**Example**  
-```js
-// returns Concept for American Football using a prefixed ID
-var scheme = new skos.ConceptScheme(activityListJsonObject);
-return scheme.getConceptByID('oa:activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
 ```
 <a name="module_skos..ConceptScheme+getConceptByLabel"></a>
 
