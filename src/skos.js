@@ -84,7 +84,6 @@ function ConceptScheme(scheme, id) {
     var conceptBroaderDupCheck = {};
     var broader = concept._originalConcept.broader || concept._originalConcept.broaderTransitive || [];
     if (!Array.isArray(broader)) broader = [broader];
-    broader = broader.map(Concept.getFullyQualifiedID);
     for (var l = 0; l < broader.length; l++) {
       var broaderConceptId = broader[l];
 
@@ -99,9 +98,8 @@ function ConceptScheme(scheme, id) {
     }
     if (concept._originalConcept.related && Array.isArray(concept._originalConcept.related)) {
       var conceptRelatedDupCheck = {};
-      var related = concept._originalConcept.related.map(Concept.getFullyQualifiedID);
-      for (var m = 0; m < related.length; m++) {
-        var relatedConceptId = related[m];
+      for (var m = 0; m < concept._originalConcept.related.length; m++) {
+        var relatedConceptId = concept._originalConcept.related[m];
         if (!conceptIndex[relatedConceptId]) {
           throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has referenced related Concept "' + relatedConceptId + '", which was not found in scheme');
         } else if (conceptRelatedDupCheck[relatedConceptId] === true) {
@@ -148,9 +146,6 @@ function ConceptScheme(scheme, id) {
 ConceptScheme.prototype.getConceptByID = function getConceptByID(id) {
   // If the id is found, return the Concept
   if (this.index[id]) return this.index[id];
-  // Otherwise try replacing the prefix
-  var fqId = Concept.getFullyQualifiedID(id);
-  if (this.index[fqId]) return this.index[fqId];
   // Otherwise return null
   return null;
 };
@@ -249,7 +244,7 @@ function Concept(concept) {
   if (!(concept.prefLabel && concept.id && concept.type === 'Concept')) {
     throw new Error('Invalid concept: "' + concept.id + '"');
   }
-  this.id = Concept.getFullyQualifiedID(concept.id);
+  this.id = concept.id;
   this.prefLabel = concept.prefLabel;
   this.altLabel = concept.altLabel;
   this.hiddenLabel = concept.hiddenLabel;
@@ -379,48 +374,6 @@ Concept.compare = function compare(a, b) {
   if (a.prefLabel < b.prefLabel) return -1;
   if (a.prefLabel > b.prefLabel) return 1;
   return 0;
-};
-
-/**
- * Return a fully qualified ID, from a fully qualified or prefixed ID
- *
- * @example
- * // returns "https://openactive.io/activity-list#1"
- * return skos.Concept.getFullyQualifiedID("oa:activity-list#1");
- *
- * @example
- * // returns "https://openactive.io/activity-list#1"
- * return skos.Concept.getFullyQualifiedID("https://openactive.io/activity-list#1");
- *
- * @param {string} id  The Concept ID
- * @return {string} the fully qualified Concept ID
- */
-Concept.getFullyQualifiedID = function getFullyQualifiedID(id) {
-  var OPENACTIVE_PREFIX = 'oa:';
-  if (typeof id !== 'string' || id.length <= OPENACTIVE_PREFIX.length) return id;
-  return id.substring(0, OPENACTIVE_PREFIX.length) === OPENACTIVE_PREFIX ?
-    'https://openactive.io/' + id.substring(OPENACTIVE_PREFIX.length) : id;
-};
-
-/**
- * Return a prefixed ID, from a fully qualified or prefixed ID
- *
- * @example
- * // returns "oa:activity-list#1"
- * return skos.Concept.getPrefixedID("oa:activity-list#1");
- *
- * @example
- * // returns "oa:activity-list#1"
- * return skos.Concept.getPrefixedID("https://openactive.io/activity-list#1");
- *
- * @param {string} id  The Concept ID
- * @return {string} the prefixed Concept ID
- */
-Concept.getPrefixedID = function getPrefixedID(id) {
-  var OPENACTIVE_DOMAIN = 'https://openactive.io/';
-  if (typeof id !== 'string' || id.length <= OPENACTIVE_DOMAIN.length) return id;
-  return id.substring(0, OPENACTIVE_DOMAIN.length) === OPENACTIVE_DOMAIN ?
-    'oa:' + id.substring(OPENACTIVE_DOMAIN.length) : id;
 };
 
 /**
