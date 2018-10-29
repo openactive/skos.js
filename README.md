@@ -81,10 +81,12 @@ without requiring transpiling. It has been tested on IE9 upwards.
             * [.getBroader()](#module_skos..Concept+getBroader) ⇒ <code>Array</code>
             * [.getBroaderTransitive()](#module_skos..Concept+getBroaderTransitive) ⇒ <code>Array</code>
             * [.getRelated()](#module_skos..Concept+getRelated) ⇒ <code>Array</code>
+            * [.equals(concept)](#module_skos..Concept+equals) ⇒ <code>boolean</code>
             * [.toString()](#module_skos..Concept+toString) ⇒ <code>String</code>
             * [.getJSON()](#module_skos..Concept+getJSON) ⇒ <code>Object</code>
         * _static_
             * [.compare(a, b)](#module_skos..Concept.compare) ⇒ <code>Integer</code>
+            * [.getFullyQualifiedID(id)](#module_skos..Concept.getFullyQualifiedID) ⇒ <code>string</code>
 
 <a name="module_skos..ConceptScheme"></a>
 
@@ -229,22 +231,24 @@ Return a string rendering the ConceptScheme as Markdown.
         * [.getBroader()](#module_skos..Concept+getBroader) ⇒ <code>Array</code>
         * [.getBroaderTransitive()](#module_skos..Concept+getBroaderTransitive) ⇒ <code>Array</code>
         * [.getRelated()](#module_skos..Concept+getRelated) ⇒ <code>Array</code>
+        * [.equals(concept)](#module_skos..Concept+equals) ⇒ <code>boolean</code>
         * [.toString()](#module_skos..Concept+toString) ⇒ <code>String</code>
         * [.getJSON()](#module_skos..Concept+getJSON) ⇒ <code>Object</code>
     * _static_
         * [.compare(a, b)](#module_skos..Concept.compare) ⇒ <code>Integer</code>
+        * [.getFullyQualifiedID(id)](#module_skos..Concept.getFullyQualifiedID) ⇒ <code>string</code>
 
 <a name="new_module_skos..Concept_new"></a>
 
 #### new Concept(concept)
 Concept class.
 
-This is designed to be used within a ConceptScheme.
+A wrapper for the SKOS Concept JSON object
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| concept | <code>Object</code> | A JSON Concept object |
+| concept | <code>Object</code> | A Concept JSON object |
 
 <a name="module_skos..Concept+getNarrower"></a>
 
@@ -305,6 +309,18 @@ Get an array of related concepts.
 
 **Kind**: instance method of [<code>Concept</code>](#module_skos..Concept)  
 **Returns**: <code>Array</code> - an array of Concept  
+<a name="module_skos..Concept+equals"></a>
+
+#### concept.equals(concept) ⇒ <code>boolean</code>
+Return true if two Concepts are equal and of the same type
+
+**Kind**: instance method of [<code>Concept</code>](#module_skos..Concept)  
+**Returns**: <code>boolean</code> - representing whether the two Concepts are equal  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| concept | <code>Object</code> | Concept to compare |
+
 <a name="module_skos..Concept+toString"></a>
 
 #### concept.toString() ⇒ <code>String</code>
@@ -335,6 +351,28 @@ Compare two Concepts based on prefLabel, for use with native .sort()
 **Example**  
 ```js
 var sortedConcepts = concepts.sort(skos.Concept.compare);
+```
+<a name="module_skos..Concept.getFullyQualifiedID"></a>
+
+#### Concept.getFullyQualifiedID(id) ⇒ <code>string</code>
+Return a fully qualified ID, from a fully qualified or prefixed ID
+
+**Kind**: static method of [<code>Concept</code>](#module_skos..Concept)  
+**Returns**: <code>string</code> - the fully qualified Concept ID  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | The Concept ID |
+
+**Example**  
+```js
+// returns "https://openactive.io/activity-list#1"
+return getFullyQualifiedID("oa:activity-list#1");
+```
+**Example**  
+```js
+// returns "https://openactive.io/activity-list#1"
+return getFullyQualifiedID("https://openactive.io/activity-list#1");
 ```
 
 * * *

@@ -1,4 +1,4 @@
-var ConceptScheme = require('./skos').ConceptScheme;
+var skos = require('./skos');
 
 var activityList = {
   '@context': 'https://openactive.io/',
@@ -51,16 +51,16 @@ var activityList = {
 
 describe('A new ConceptScheme', function () {
   it('can be created from ConceptScheme JSON', function () {
-    var scheme = new ConceptScheme(activityList);
+    var scheme = new skos.ConceptScheme(activityList);
     expect(scheme.getAllConcepts().length).toEqual(activityList.concept.length);
   });
   it('can be created from Concept array', function () {
-    var scheme = new ConceptScheme(activityList.concept, 'https://openactive.io/activity-list');
+    var scheme = new skos.ConceptScheme(activityList.concept, 'https://openactive.io/activity-list');
     expect(scheme.getAllConcepts().length).toEqual(activityList.concept.length);
   });
   it('throws error for Concept array without ID', function () {
     expect( function () {
-      var scheme = new ConceptScheme(activityList.concept);
+      var scheme = new skos.ConceptScheme(activityList.concept);
       scheme.getNarrowerTransitive('');
     } ).toThrow(new Error('ID must be supplied with Concept array'));
   });
@@ -69,36 +69,36 @@ describe('A new ConceptScheme', function () {
 describe('An invalid ConceptScheme', function () {
   it('throws error for duplicate broader references', function () {
     expect( function () {
-      var scheme = new ConceptScheme(activityList.concept.concat([{
+      var scheme = new skos.ConceptScheme(activityList.concept.concat([{
         id: 'https://openactive.io/activity-list#1.3',
         type: 'Concept',
         prefLabel: '#1.3',
-        broaderTransitive: ['https://openactive.io/activity-list#1', 'https://openactive.io/activity-list#1']
+        broaderTransitive: ['oa:activity-list#1', 'https://openactive.io/activity-list#1']
       }]), 'https://openactive.io/activity-list');
       scheme.getNarrowerTransitive('');
     } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme: Concept "https://openactive.io/activity-list#1.3" has duplicated broader references to "https://openactive.io/activity-list#1"'));
   });
   it('throws error for duplicate related references', function () {
     expect( function () {
-      var scheme = new ConceptScheme(activityList.concept.concat([{
+      var scheme = new skos.ConceptScheme(activityList.concept.concat([{
         id: 'https://openactive.io/activity-list#1.3',
         type: 'Concept',
         prefLabel: '#1.3',
-        related: ['https://openactive.io/activity-list#1', 'https://openactive.io/activity-list#1']
+        related: ['oa:activity-list#1', 'https://openactive.io/activity-list#1']
       }]), 'https://openactive.io/activity-list');
       scheme.getNarrowerTransitive('');
     } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme: Concept "https://openactive.io/activity-list#1.3" has duplicated related references to "https://openactive.io/activity-list#1"'));
   });
   it('throws error for bad inputs', function () {
     expect( function () {
-      var scheme = new ConceptScheme(null, '?');
+      var scheme = new skos.ConceptScheme(null, '?');
       scheme.getNarrowerTransitive('');
     } ).toThrow(new Error('Invalid scheme supplied to ConceptScheme'));
   });
   it('throws error for bad broader references', function () {
     expect( function () {
-      var scheme = new ConceptScheme(activityList.concept.concat([{
-        id: 'https://openactive.io/activity-list#3',
+      var scheme = new skos.ConceptScheme(activityList.concept.concat([{
+        id: 'oa:activity-list#3',
         type: 'Concept',
         prefLabel: '#3',
         broaderTransitive: ['i-dont-exist']
@@ -108,7 +108,7 @@ describe('An invalid ConceptScheme', function () {
   });
   it('throws error for bad related references', function () {
     expect( function () {
-      var scheme = new ConceptScheme(activityList.concept.concat([{
+      var scheme = new skos.ConceptScheme(activityList.concept.concat([{
         id: 'https://openactive.io/activity-list#3',
         type: 'Concept',
         prefLabel: '#3',
@@ -119,7 +119,7 @@ describe('An invalid ConceptScheme', function () {
   });
   it('throws error for invalid concept', function () {
     expect( function () {
-      var scheme = new ConceptScheme(activityList.concept.concat([{
+      var scheme = new skos.ConceptScheme(activityList.concept.concat([{
         id: 'https://openactive.io/activity-list#bad-concept',
         type: 'Concept'
       }]), 'https://openactive.io/activity-list');
@@ -139,7 +139,7 @@ function getIds(concepts) {
 describe('The concept 1', function () {
   var scheme;
   beforeEach(function setupScheme() {
-    scheme = new ConceptScheme(activityList);
+    scheme = new skos.ConceptScheme(activityList);
   });
   it('is in topConcepts', function () {
     var ids = getIds(scheme.getTopConcepts());
@@ -176,7 +176,7 @@ describe('The concept 1', function () {
 describe('The concept 1.2', function () {
   var scheme;
   beforeEach(function setupScheme() {
-    scheme = new ConceptScheme(activityList);
+    scheme = new skos.ConceptScheme(activityList);
   });
   it('has a narrower of 1.2.1', function () {
     var ids = getIds(scheme.getConceptByID(oa('1.2')).getNarrower());
@@ -199,7 +199,7 @@ describe('The concept 1.2', function () {
 describe('The concept 1.2.1', function () {
   var scheme;
   beforeEach(function setupScheme() {
-    scheme = new ConceptScheme(activityList);
+    scheme = new skos.ConceptScheme(activityList);
   });
   it('has a broaderTransitive of 1', function () {
     var ids = getIds(scheme.getConceptByID(oa('1.2.1')).getBroaderTransitive());
@@ -230,7 +230,7 @@ var expectedString = `- #1
 describe('The ConceptScheme', function () {
   var scheme;
   beforeEach(function setupScheme() {
-    scheme = new ConceptScheme(activityList);
+    scheme = new skos.ConceptScheme(activityList);
   });
   it('has two topConcepts', function () {
     var ids = getIds(scheme.getTopConcepts());
@@ -254,5 +254,42 @@ describe('The ConceptScheme', function () {
   });
   it('returns JSON containing the same concept array', function () {
     expect(scheme.getJSON().concept).toEqual(activityList.concept);
+  });
+});
+
+describe('Externally created Concept', function () {
+  var concept;
+  beforeEach(function setupConcept() {
+    concept = new skos.Concept({
+      id: 'https://openactive.io/activity-list#1.3',
+      type: 'Concept',
+      prefLabel: '#1.3',
+      related: ['https://openactive.io/activity-list#1', 'https://openactive.io/activity-list#1']
+    });
+  });
+  it('throws error for getBroader', function () {
+    expect( function () {
+      concept.getBroader();
+    } ).toThrow(new Error('Concept must have been generated by ConceptScheme to support getBroader'));
+  });
+  it('throws error for getBroaderTransitive', function () {
+    expect( function () {
+      concept.getBroaderTransitive();
+    } ).toThrow(new Error('Concept must have been generated by ConceptScheme to support getBroaderTransitive'));
+  });
+  it('throws error for getNarrower', function () {
+    expect( function () {
+      concept.getNarrower();
+    } ).toThrow(new Error('Concept must have been generated by ConceptScheme to support getNarrower'));
+  });
+  it('throws error for getNarrowerTransitive', function () {
+    expect( function () {
+      concept.getNarrowerTransitive();
+    } ).toThrow(new Error('Concept must have been generated by ConceptScheme to support getNarrowerTransitive'));
+  });
+  it('throws error for getRelated', function () {
+    expect( function () {
+      concept.getRelated();
+    } ).toThrow(new Error('Concept must have been generated by ConceptScheme to support getRelated'));
   });
 });
