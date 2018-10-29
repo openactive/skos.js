@@ -313,6 +313,7 @@ Get an array of related concepts.
 
 #### concept.equals(concept) ⇒ <code>boolean</code>
 Return true if two Concepts are equal and of the same type
+If a raw JSON Concept is supplied it is coerced into a Concept object
 
 **Kind**: instance method of [<code>Concept</code>](#module_skos..Concept)  
 **Returns**: <code>boolean</code> - representing whether the two Concepts are equal  

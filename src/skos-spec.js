@@ -257,6 +257,55 @@ describe('The ConceptScheme', function () {
   });
 });
 
+describe('Checking for equality of concepts ', function () {
+  var conceptA1;
+  var conceptA2;
+  var conceptB;
+  var rawConceptA1;
+  var rawConceptA2;
+  var rawConceptB;
+  beforeEach(function setupConcept() {
+    rawConceptA1 = {
+      id: 'https://openactive.io/activity-list#A',
+      type: 'Concept',
+      prefLabel: 'A'
+    };
+    rawConceptA2 = {
+      id: 'https://openactive.io/activity-list#A',
+      type: 'Concept',
+      prefLabel: 'A'
+    };
+    rawConceptB = {
+      id: 'https://openactive.io/activity-list#B',
+      type: 'Concept',
+      prefLabel: 'B'
+    };
+    conceptA1 = new skos.Concept(rawConceptA1);
+    conceptA2 = new skos.Concept(rawConceptA2);
+    conceptB = new skos.Concept(rawConceptB);
+  });
+  it('A1.equals(A1) == true', function () {
+    expect(conceptA1.equals(conceptA1)).toEqual(true);
+  });
+  it('A1.equals(A2) == true', function () {
+    expect(conceptA1.equals(conceptA2)).toEqual(true);
+  });
+  it('A.equals(rawA) == true', function () {
+    expect(conceptA1.equals(rawConceptA1)).toEqual(true);
+  });
+  it('A.equals(B) == false', function () {
+    expect(conceptA1.equals(conceptB)).toEqual(false);
+  });
+  it('A.equals(notConcept) throws error', function () {
+    expect( function () {
+      var rawNotConcept = {
+        id: 'https://openactive.io/activity-list#B'
+      };
+      conceptA1.equals(rawNotConcept);
+    } ).toThrow(new Error('Invalid concept: "https://openactive.io/activity-list#B"'));
+  });
+});
+
 describe('Externally created Concept', function () {
   var concept;
   beforeEach(function setupConcept() {
