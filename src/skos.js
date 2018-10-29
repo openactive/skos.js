@@ -386,20 +386,41 @@ Concept.compare = function compare(a, b) {
  *
  * @example
  * // returns "https://openactive.io/activity-list#1"
- * return getFullyQualifiedID("oa:activity-list#1");
+ * return skos.Concept.getFullyQualifiedID("oa:activity-list#1");
  *
  * @example
  * // returns "https://openactive.io/activity-list#1"
- * return getFullyQualifiedID("https://openactive.io/activity-list#1");
+ * return skos.Concept.getFullyQualifiedID("https://openactive.io/activity-list#1");
  *
  * @param {string} id  The Concept ID
  * @return {string} the fully qualified Concept ID
  */
 Concept.getFullyQualifiedID = function getFullyQualifiedID(id) {
-  if (typeof id !== 'string') return id;
   var OPENACTIVE_PREFIX = 'oa:';
+  if (typeof id !== 'string' || id.length <= OPENACTIVE_PREFIX.length) return id;
   return id.substring(0, OPENACTIVE_PREFIX.length) === OPENACTIVE_PREFIX ?
     'https://openactive.io/' + id.substring(OPENACTIVE_PREFIX.length) : id;
+};
+
+/**
+ * Return a prefixed ID, from a fully qualified or prefixed ID
+ *
+ * @example
+ * // returns "oa:activity-list#1"
+ * return skos.Concept.getPrefixedID("oa:activity-list#1");
+ *
+ * @example
+ * // returns "oa:activity-list#1"
+ * return skos.Concept.getPrefixedID("https://openactive.io/activity-list#1");
+ *
+ * @param {string} id  The Concept ID
+ * @return {string} the prefixed Concept ID
+ */
+Concept.getPrefixedID = function getPrefixedID(id) {
+  var OPENACTIVE_DOMAIN = 'https://openactive.io/';
+  if (typeof id !== 'string' || id.length <= OPENACTIVE_DOMAIN.length) return id;
+  return id.substring(0, OPENACTIVE_DOMAIN.length) === OPENACTIVE_DOMAIN ?
+    'oa:' + id.substring(OPENACTIVE_DOMAIN.length) : id;
 };
 
 /**

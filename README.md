@@ -87,6 +87,7 @@ without requiring transpiling. It has been tested on IE9 upwards.
         * _static_
             * [.compare(a, b)](#module_skos..Concept.compare) ⇒ <code>Integer</code>
             * [.getFullyQualifiedID(id)](#module_skos..Concept.getFullyQualifiedID) ⇒ <code>string</code>
+            * [.getPrefixedID(id)](#module_skos..Concept.getPrefixedID) ⇒ <code>string</code>
 
 <a name="module_skos..ConceptScheme"></a>
 
@@ -237,6 +238,7 @@ Return a string rendering the ConceptScheme as Markdown.
     * _static_
         * [.compare(a, b)](#module_skos..Concept.compare) ⇒ <code>Integer</code>
         * [.getFullyQualifiedID(id)](#module_skos..Concept.getFullyQualifiedID) ⇒ <code>string</code>
+        * [.getPrefixedID(id)](#module_skos..Concept.getPrefixedID) ⇒ <code>string</code>
 
 <a name="new_module_skos..Concept_new"></a>
 
@@ -312,8 +314,8 @@ Get an array of related concepts.
 <a name="module_skos..Concept+equals"></a>
 
 #### concept.equals(concept) ⇒ <code>boolean</code>
-Return true if two Concepts are equal and of the same type
-If a raw JSON Concept is supplied it is coerced into a Concept object
+Return true if two Concepts are equal and of the same type.
+If a raw JSON Concept is supplied it is coerced into a Concept object.
 
 **Kind**: instance method of [<code>Concept</code>](#module_skos..Concept)  
 **Returns**: <code>boolean</code> - representing whether the two Concepts are equal  
@@ -368,12 +370,34 @@ Return a fully qualified ID, from a fully qualified or prefixed ID
 **Example**  
 ```js
 // returns "https://openactive.io/activity-list#1"
-return getFullyQualifiedID("oa:activity-list#1");
+return skos.Concept.getFullyQualifiedID("oa:activity-list#1");
 ```
 **Example**  
 ```js
 // returns "https://openactive.io/activity-list#1"
-return getFullyQualifiedID("https://openactive.io/activity-list#1");
+return skos.Concept.getFullyQualifiedID("https://openactive.io/activity-list#1");
+```
+<a name="module_skos..Concept.getPrefixedID"></a>
+
+#### Concept.getPrefixedID(id) ⇒ <code>string</code>
+Return a prefixed ID, from a fully qualified or prefixed ID
+
+**Kind**: static method of [<code>Concept</code>](#module_skos..Concept)  
+**Returns**: <code>string</code> - the prefixed Concept ID  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| id | <code>string</code> | The Concept ID |
+
+**Example**  
+```js
+// returns "oa:activity-list#1"
+return skos.Concept.getPrefixedID("oa:activity-list#1");
+```
+**Example**  
+```js
+// returns "oa:activity-list#1"
+return skos.Concept.getPrefixedID("https://openactive.io/activity-list#1");
 ```
 
 * * *
