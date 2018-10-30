@@ -3,7 +3,6 @@ spec
 src/**/*[sS]pec.js
 
 # Browser version
-dist
 demo
 
 # Docs

@@ -4,6 +4,7 @@
   "description": "Simple JavaScript library to wrap the OpenActive JSON-LD representation of SKOS.",
   "homepage": "https://github.com/openactive/skos.js#readme",
   "main": "src/skos.js",
+  "browser": "dist/skos.min.js",
   "scripts": {
     "pretest": "npm run lint",
     "lint": "eslint \"src/**/*.js\"",
