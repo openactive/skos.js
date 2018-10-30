@@ -43,7 +43,7 @@ See the [live demo](https://www.openactive.io/skos.js/demo/).
 
 ```html
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
-<script src="https://www.openactive.io/skos.js/dist/skos.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openactive/skos/dist/skos.min.js" type="text/javascript"></script>
 <script type="text/javascript">
   $.getJSON('https://www.openactive.io/activity-list/activity-list.jsonld', function(activityListJsonObject) {
     var scheme = new skos.ConceptScheme(activityListJsonObject);
