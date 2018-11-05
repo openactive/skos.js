@@ -29,40 +29,99 @@
  * @constructor
  * @param {Object | Array} scheme  Either a JSON ConceptScheme object *OR* Array of Concepts
  * @param {String} [id] The scheme id, only required if an array is provided for scheme
+ * @param {Object | Array} [filter] Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept.
  */
-function ConceptScheme(scheme, id) {
+function ConceptScheme(scheme, id, filter) {
   // Construct from scheme from array if needed
   if (Array.isArray(scheme)) {
     if (typeof id === 'undefined') throw new Error('ID must be supplied with Concept array');
-    this.scheme = {
+    this._scheme = {
       'type': 'ConceptScheme',
       'id': id,
       'concept': scheme
     };
   } else if (typeof scheme === 'object' && scheme !== null && typeof scheme.concept !== 'undefined' && typeof scheme.id !== 'undefined' && scheme.type === 'ConceptScheme') {
-    this.scheme = scheme;
+    this._scheme = scheme;
   } else {
     throw new Error('Invalid scheme supplied to ConceptScheme');
   }
 
-  // Create list of parent ConceptScheme
+  var filterMap;
+  if (Array.isArray(filter)) {
+    filterMap = filter.concept.reduce(function (map, entry) {
+      map[entry] = true;
+      return map;
+    }, {});
+  } else if (typeof filter === 'object') {
+    filterMap = filter;
+  } else {
+    // Leave filterMap undefined
+  }
+
+  // Create lookups for ConceptScheme
   var topConcepts = [];
   var labelIndex = {};
   var conceptIndex = {};
   var conceptArray = [];
 
+  // Create master index for Concepts filtered out
+  var masterConceptIndex = {};
+
   // Declaire once for the following loops
   var concept;
 
   // Create an index of all concepts by ID
-  for (var i = 0; i < this.scheme.concept.length; i++) {
-    concept = new Concept(this.scheme.concept[i]);
+  for (var i = 0; i < this._scheme.concept.length; i++) {
+    concept = new Concept(this._scheme.concept[i]);
     concept._partOfScheme = true;
+
+    // Add to master index
+    masterConceptIndex[concept.id] = concept;
+    if (typeof filterMap === 'undefined' || filterMap[concept.id]) {
+      // Add to array for subsiquent loop
+      conceptArray.push(concept);
+
+      // Add any metadata provided to the filter to the Concept
+      if (typeof filterMap !== 'undefined' && typeof filterMap[concept.id] === 'object') {
+        var meta = filterMap[concept.id];
+        for (var prop in meta) {
+          if (meta.hasOwnProperty(prop)) {
+          concept._originalConcept[prop] = meta[prop];
+        }
+      }
+    }
+  }
+
+  // Add ._broaderConcepts to all Concepts, throwing error for graph inconsistencies, adding to the filter for missing broader references
+  for (var k = 0; k < conceptArray.length; k++) {
+    concept = conceptArray[k];
+    var conceptBroaderDupCheck = {};
+    var broader = concept._originalConcept.broader || concept._originalConcept.broaderTransitive || [];
+    if (!Array.isArray(broader)) broader = [broader];
+    for (var l = 0; l < broader.length; l++) {
+      var broaderConceptId = broader[l];
+
+      if (!masterConceptIndex[broaderConceptId]) {
+        throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has referenced broader Concept "' + broaderConceptId + '", which was not found in scheme');
+      } else if (conceptBroaderDupCheck[broaderConceptId] === true) {
+        throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated broader references to "' + broaderConceptId + '"');
+      } else {
+        // If the broader reference was not included in the filter, add it to the conceptArray for processing
+        if (typeof filterMap !== 'undefined' && !filterMap[concept.id]) conceptArray.push(masterConceptIndex[broaderConceptId]);
+        // Include reference to broader Concept in this concept
+        concept._broaderConcepts.push(masterConceptIndex[broaderConceptId]);
+        conceptBroaderDupCheck[broaderConceptId] = true;
+      }
+    }
+  }
+
+  // Create all indexes based on complete conceptArray
+  for (var r = 0; r < conceptArray.length; r++) {
+    concept = conceptArray[r];
 
     // Add to indexes
     conceptIndex[concept.id] = concept;
     labelIndex[concept.prefLabel] = concept;
-    conceptArray.push(concept);
 
     // Add altLabels to prefLabel index. Ignore hidden labels,
     // as a good autocomplete will handle fuzzy matching.
@@ -73,34 +132,25 @@ function ConceptScheme(scheme, id) {
     }
 
     // If topConcept then also add to topConcepts
-    if (this.scheme.concept[i].topConceptOf === this.scheme.id) {
+    if (this._scheme.concept[i].topConceptOf === this._scheme.id) {
       topConcepts.push(concept);
     }
   }
 
-  // Add ._broaderConcepts to all Concepts, throwing error for graph inconsistencies
-  for (var k = 0; k < conceptArray.length; k++) {
-    concept = conceptArray[k];
-    var conceptBroaderDupCheck = {};
-    var broader = concept._originalConcept.broader || concept._originalConcept.broaderTransitive || [];
-    if (!Array.isArray(broader)) broader = [broader];
-    for (var l = 0; l < broader.length; l++) {
-      var broaderConceptId = broader[l];
+  // Add ._relatedConcepts and ._narrowerConcepts to all Concepts, throwing error for graph inconsistencies, and pruning related items that have not made it through the filter
+  for (var q = 0; q < conceptArray.length; q++) {
+    concept = conceptArray[q];
 
-      if (!conceptIndex[broaderConceptId]) {
-        throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has referenced broader Concept "' + broaderConceptId + '", which was not found in scheme');
-      } else if (conceptBroaderDupCheck[broaderConceptId] === true) {
-        throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated broader references to "' + broaderConceptId + '"');
-      } else {
-        concept._broaderConcepts.push(conceptIndex[broaderConceptId]);
-        conceptBroaderDupCheck[broaderConceptId] = true;
-      }
-    }
+    // Add ._relatedConcepts to all Concepts
     if (concept._originalConcept.related && Array.isArray(concept._originalConcept.related)) {
       var conceptRelatedDupCheck = {};
-      for (var m = 0; m < concept._originalConcept.related.length; m++) {
+      // Loop through array in reverse to allow for in-loop splicing to prune related
+      for (var m = concept._originalConcept.related.length; m < 0; m--) {
         var relatedConceptId = concept._originalConcept.related[m];
-        if (!conceptIndex[relatedConceptId]) {
+        if (!conceptIndex[relatedConceptId] && masterConceptIndex[relatedConceptId]) {
+          // Prune the related reference from the concept, as it has been excluded by the filter
+          concept._originalConcept.related.splice(m, 1);
+        } else if (!conceptIndex[relatedConceptId]) {
           throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has referenced related Concept "' + relatedConceptId + '", which was not found in scheme');
         } else if (conceptRelatedDupCheck[relatedConceptId] === true) {
           throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated related references to "' + relatedConceptId + '"');
@@ -110,20 +160,33 @@ function ConceptScheme(scheme, id) {
         }
       }
     }
-  }
 
-  // Add ._narrowerConcepts to all Concepts
-  for (var n = 0; n < conceptArray.length; n++) {
-    concept = conceptArray[n];
+    // Add ._narrowerConcepts to all Concepts
     for (var p = 0; p < concept._broaderConcepts.length; p++) {
       concept._broaderConcepts[p]._narrowerConcepts.push(concept);
     }
   }
 
-  this.topConcepts = topConcepts.sort(Concept.compare);
-  this.index = conceptIndex;
-  this.labelIndex = labelIndex;
+  this._topConcepts = topConcepts.sort(Concept.compare);
+  this._index = conceptIndex;
+  this._labelIndex = labelIndex;
 }
+
+/**
+ * Generate ConceptScheme subset
+ *
+ * @example
+ * // returns ConceptScheme subset of just Pole Vault and its broader concepts (Athletics)
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
+ * return scheme.generateSubset(['https://openactive.io/activity-list#5df80216-2af8-4ad3-8120-a34c11ea1a87']);
+ *
+ * @param {Object | Array} filter  Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept.
+ * @return {ConceptScheme} the ConceptScheme subset
+ */
+ConceptScheme.prototype.generateSubset = function generateSubset(filter) {
+  // Create a new ConceptScheme based on this one with the filter applied
+  return new ConceptScheme(this._scheme, null, filter);
+};
 
 /**
  * Get Concept by ID
@@ -134,11 +197,11 @@ function ConceptScheme(scheme, id) {
  * return scheme.getConceptByID('https://openactive.io/activity-list#9caeb442-2834-4859-b660-9172ed61ee71');
  *
  * @param {String} id  The id of the Concept
- * @return {Object} the Concept, or null if no matching concept exists
+ * @return {Concept} the Concept, or null if no matching concept exists
  */
 ConceptScheme.prototype.getConceptByID = function getConceptByID(id) {
   // If the id is found, return the Concept
-  if (this.index[id]) return this.index[id];
+  if (this._index[id]) return this._index[id];
   // Otherwise return null
   return null;
 };
@@ -158,7 +221,7 @@ ConceptScheme.prototype.getConceptByID = function getConceptByID(id) {
  */
 ConceptScheme.prototype.getConceptByLabel = function getConceptByLabel(label) {
   // If the label is found, return the Concept
-  return this.labelIndex[label] || null;
+  return this._labelIndex[label] || null;
 };
 
 /**
@@ -167,7 +230,7 @@ ConceptScheme.prototype.getConceptByLabel = function getConceptByLabel(label) {
  * @return {Array} an array of Concept
  */
 ConceptScheme.prototype.getAllConcepts = function getAllConcepts() {
-  var index = this.index;
+  var index = this._index;
   // Equivalent of Object.values() with wider browser support
   return (Object.values ? Object.values(index) : Object.keys(index).map(function (key) { return index[key]; })).sort(Concept.compare);
 };
@@ -178,7 +241,7 @@ ConceptScheme.prototype.getAllConcepts = function getAllConcepts() {
  * @return {Array} an map of Concept by ID
  */
 ConceptScheme.prototype.getAllConceptsByID = function getAllConceptsByID() {
-  return this.index;
+  return this._index;
 };
 
 /**
@@ -187,7 +250,7 @@ ConceptScheme.prototype.getAllConceptsByID = function getAllConceptsByID() {
  * @return {Object} a map of Concept by altLabel / prefLabel
  */
 ConceptScheme.prototype.getAllConceptsByLabel = function getAllConceptsByLabel() {
-  return this.labelIndex;
+  return this._labelIndex;
 };
 
 /**
@@ -196,7 +259,7 @@ ConceptScheme.prototype.getAllConceptsByLabel = function getAllConceptsByLabel()
  * @return {Array} an array of Concept
  */
 ConceptScheme.prototype.getTopConcepts = function getTopConcepts() {
-  return this.topConcepts;
+  return this._topConcepts;
 };
 
 /**
@@ -205,7 +268,7 @@ ConceptScheme.prototype.getTopConcepts = function getTopConcepts() {
  * @return {Object} a JSON object
  */
 ConceptScheme.prototype.getJSON = function getJSON() {
-  return this.scheme;
+  return this._scheme;
 };
 
 /**
@@ -220,7 +283,7 @@ ConceptScheme.prototype.toString = function toString() {
     }, [Array(tabWidth).join(' ') + '- ' + thisConcept.toString()]);
   }
 
-  return this.topConcepts.reduce(function (lines, concept) {
+  return this._topConcepts.reduce(function (lines, concept) {
     return lines.concat(renderLines(concept, 1));
   }, []).join('\n');
 };
