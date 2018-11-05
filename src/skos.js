@@ -211,7 +211,7 @@ ConceptScheme.prototype.getConceptByID = function getConceptByID(id) {
  * return scheme.getConceptByLabel('American Football');
  *
  * @param {String} label  The label of the Concept
- * @return {Object} the Concept, or null if no matching concept exists
+ * @return {Concept} the Concept, or null if no matching concept exists
  */
 ConceptScheme.prototype.getConceptByLabel = function getConceptByLabel(label) {
   // If the label is found, return the Concept
@@ -426,7 +426,7 @@ Concept.prototype.getRelated = function getRelated() {
  * Return true if two Concepts are equal and of the same type.
  * If a raw JSON Concept is supplied it is coerced into a Concept object.
  *
- * @param {Object} concept  Concept to compare
+ * @param {Concept} concept  Concept to compare
  * @return {boolean} representing whether the two Concepts are equal
  */
 Concept.prototype.equals = function equals(concept) {
@@ -440,8 +440,8 @@ Concept.prototype.equals = function equals(concept) {
  * @example
  * var sortedConcepts = concepts.sort(skos.Concept.compare);
  *
- * @param {Object} a  Concept A
- * @param {Object} b  Concept B
+ * @param {Concept} a  Concept A
+ * @param {Concept} b  Concept B
  * @return {Integer} representing which should be sorted above the other
  */
 Concept.compare = function compare(a, b) {

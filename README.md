@@ -66,7 +66,7 @@ without requiring transpiling. It has been tested on IE9 upwards.
     * [~ConceptScheme](#module_skos..ConceptScheme)
         * [new ConceptScheme(scheme, [id], [filter])](#new_module_skos..ConceptScheme_new)
         * [.getConceptByID(id)](#module_skos..ConceptScheme+getConceptByID) ⇒ <code>Concept</code>
-        * [.getConceptByLabel(label)](#module_skos..ConceptScheme+getConceptByLabel) ⇒ <code>Object</code>
+        * [.getConceptByLabel(label)](#module_skos..ConceptScheme+getConceptByLabel) ⇒ <code>Concept</code>
         * [.getAllConcepts()](#module_skos..ConceptScheme+getAllConcepts) ⇒ <code>Array</code>
         * [.getAllConceptsByID()](#module_skos..ConceptScheme+getAllConceptsByID) ⇒ <code>Array</code>
         * [.getAllConceptsByLabel()](#module_skos..ConceptScheme+getAllConceptsByLabel) ⇒ <code>Object</code>
@@ -97,7 +97,7 @@ without requiring transpiling. It has been tested on IE9 upwards.
 * [~ConceptScheme](#module_skos..ConceptScheme)
     * [new ConceptScheme(scheme, [id], [filter])](#new_module_skos..ConceptScheme_new)
     * [.getConceptByID(id)](#module_skos..ConceptScheme+getConceptByID) ⇒ <code>Concept</code>
-    * [.getConceptByLabel(label)](#module_skos..ConceptScheme+getConceptByLabel) ⇒ <code>Object</code>
+    * [.getConceptByLabel(label)](#module_skos..ConceptScheme+getConceptByLabel) ⇒ <code>Concept</code>
     * [.getAllConcepts()](#module_skos..ConceptScheme+getAllConcepts) ⇒ <code>Array</code>
     * [.getAllConceptsByID()](#module_skos..ConceptScheme+getAllConceptsByID) ⇒ <code>Array</code>
     * [.getAllConceptsByLabel()](#module_skos..ConceptScheme+getAllConceptsByLabel) ⇒ <code>Object</code>
@@ -152,13 +152,13 @@ return scheme.getConceptByID('https://openactive.io/activity-list#9caeb442-2834-
 ```
 <a name="module_skos..ConceptScheme+getConceptByLabel"></a>
 
-#### conceptScheme.getConceptByLabel(label) ⇒ <code>Object</code>
+#### conceptScheme.getConceptByLabel(label) ⇒ <code>Concept</code>
 Get Concept by prefLabel / altLabel
 
 This will return a case-sensitive exact match based on the prefLabel and altLabel
 
 **Kind**: instance method of [<code>ConceptScheme</code>](#module_skos..ConceptScheme)  
-**Returns**: <code>Object</code> - the Concept, or null if no matching concept exists  
+**Returns**: <code>Concept</code> - the Concept, or null if no matching concept exists  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -339,7 +339,7 @@ If a raw JSON Concept is supplied it is coerced into a Concept object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| concept | <code>Object</code> | Concept to compare |
+| concept | <code>Concept</code> | Concept to compare |
 
 <a name="module_skos..Concept+toString"></a>
 
@@ -365,8 +365,8 @@ Compare two Concepts based on prefLabel, for use with native .sort()
 
 | Param | Type | Description |
 | --- | --- | --- |
-| a | <code>Object</code> | Concept A |
-| b | <code>Object</code> | Concept B |
+| a | <code>Concept</code> | Concept A |
+| b | <code>Concept</code> | Concept B |
 
 **Example**  
 ```js
