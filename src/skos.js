@@ -56,12 +56,10 @@ function ConceptScheme(scheme, id, filter) {
     filterMap = filter;
   } else {
     // Leave filterMap undefined
+    filterMap = null;
   }
 
-  // Create lookups for ConceptScheme
-  var topConcepts = [];
-  var labelIndex = {};
-  var conceptIndex = {};
+  // Create processing array for ConceptScheme
   var conceptArray = [];
 
   // Create master index for Concepts filtered out
@@ -77,16 +75,17 @@ function ConceptScheme(scheme, id, filter) {
 
     // Add to master index
     masterConceptIndex[concept.id] = concept;
-    if (typeof filterMap === 'undefined' || filterMap[concept.id]) {
+    if (filterMap === null || filterMap[concept.id]) {
       // Add to array for subsiquent loop
       conceptArray.push(concept);
 
       // Add any metadata provided to the filter to the Concept
-      if (typeof filterMap !== 'undefined' && typeof filterMap[concept.id] === 'object') {
+      if (filterMap !== null && typeof filterMap[concept.id] === 'object') {
         var meta = filterMap[concept.id];
         for (var prop in meta) {
           if (meta.hasOwnProperty(prop)) {
-          concept._originalConcept[prop] = meta[prop];
+            concept._originalConcept[prop] = meta[prop];
+          }
         }
       }
     }
@@ -107,13 +106,18 @@ function ConceptScheme(scheme, id, filter) {
         throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated broader references to "' + broaderConceptId + '"');
       } else {
         // If the broader reference was not included in the filter, add it to the conceptArray for processing
-        if (typeof filterMap !== 'undefined' && !filterMap[concept.id]) conceptArray.push(masterConceptIndex[broaderConceptId]);
+        if (filterMap !== null && !filterMap[concept.id]) conceptArray.push(masterConceptIndex[broaderConceptId]);
         // Include reference to broader Concept in this concept
         concept._broaderConcepts.push(masterConceptIndex[broaderConceptId]);
         conceptBroaderDupCheck[broaderConceptId] = true;
       }
     }
   }
+
+  // Create lookups for ConceptScheme
+  var topConcepts = [];
+  var conceptIndex = {};
+  var labelIndex = {};
 
   // Create all indexes based on complete conceptArray
   for (var r = 0; r < conceptArray.length; r++) {
@@ -132,7 +136,7 @@ function ConceptScheme(scheme, id, filter) {
     }
 
     // If topConcept then also add to topConcepts
-    if (this._scheme.concept[i].topConceptOf === this._scheme.id) {
+    if (concept._topConceptOf === this._scheme.id) {
       topConcepts.push(concept);
     }
   }
@@ -145,7 +149,8 @@ function ConceptScheme(scheme, id, filter) {
     if (concept._originalConcept.related && Array.isArray(concept._originalConcept.related)) {
       var conceptRelatedDupCheck = {};
       // Loop through array in reverse to allow for in-loop splicing to prune related
-      for (var m = concept._originalConcept.related.length; m < 0; m--) {
+      var m = concept._originalConcept.related.length;
+      while (m--) {
         var relatedConceptId = concept._originalConcept.related[m];
         if (!conceptIndex[relatedConceptId] && masterConceptIndex[relatedConceptId]) {
           // Prune the related reference from the concept, as it has been excluded by the filter
@@ -305,6 +310,7 @@ function Concept(concept) {
   this.altLabel = concept.altLabel;
   this.hiddenLabel = concept.hiddenLabel;
   this.definition = concept.definition;
+  this._topConceptOf = concept.topConceptOf;
   this._partOfScheme = false;
   this._originalConcept = concept;
   this._broaderConcepts = [];
