@@ -29,7 +29,7 @@
  * @constructor
  * @param {Object | Array} scheme  Either a JSON ConceptScheme object *OR* Array of Concepts
  * @param {String} [id] The scheme id, only required if an array is provided for scheme
- * @param {Object | Array} [filter] Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept.
+ * @param {Object | Array} [filter] Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept. Prefer generateSubset() for most use cases.
  */
 function ConceptScheme(scheme, id, filter) {
   // Construct from scheme from array if needed
@@ -48,7 +48,7 @@ function ConceptScheme(scheme, id, filter) {
 
   var filterMap;
   if (Array.isArray(filter)) {
-    filterMap = filter.concept.reduce(function (map, entry) {
+    filterMap = filter.reduce(function (map, entry) {
       map[entry] = true;
       return map;
     }, {});
@@ -106,7 +106,7 @@ function ConceptScheme(scheme, id, filter) {
         throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated broader references to "' + broaderConceptId + '"');
       } else {
         // If the broader reference was not included in the filter, add it to the conceptArray for processing
-        if (filterMap !== null && !filterMap[concept.id]) conceptArray.push(masterConceptIndex[broaderConceptId]);
+        if (filterMap !== null && !filterMap[broaderConceptId]) conceptArray.push(masterConceptIndex[broaderConceptId]);
         // Include reference to broader Concept in this concept
         concept._broaderConcepts.push(masterConceptIndex[broaderConceptId]);
         conceptBroaderDupCheck[broaderConceptId] = true;
@@ -172,26 +172,15 @@ function ConceptScheme(scheme, id, filter) {
     }
   }
 
+  // If a filter has been applied, ensure that the scheme is up-to-date
+  if (filterMap !== null) {
+    this._scheme.concept = conceptArray.map(c => c._originalConcept);
+  }
+
   this._topConcepts = topConcepts.sort(Concept.compare);
   this._index = conceptIndex;
   this._labelIndex = labelIndex;
 }
-
-/**
- * Generate ConceptScheme subset
- *
- * @example
- * // returns ConceptScheme subset of just Pole Vault and its broader concepts (Athletics)
- * var scheme = new skos.ConceptScheme(activityListJsonObject);
- * return scheme.generateSubset(['https://openactive.io/activity-list#5df80216-2af8-4ad3-8120-a34c11ea1a87']);
- *
- * @param {Object | Array} filter  Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept.
- * @return {ConceptScheme} the ConceptScheme subset
- */
-ConceptScheme.prototype.generateSubset = function generateSubset(filter) {
-  // Create a new ConceptScheme based on this one with the filter applied
-  return new ConceptScheme(this._scheme, null, filter);
-};
 
 /**
  * Get Concept by ID
@@ -291,6 +280,29 @@ ConceptScheme.prototype.toString = function toString() {
   return this._topConcepts.reduce(function (lines, concept) {
     return lines.concat(renderLines(concept, 1));
   }, []).join('\n');
+};
+
+/**
+ * Generate ConceptScheme subset
+ *
+ * The subset will be generated to include all broader Concepts of any of those included in the filter, and will have pruned any references to related Concepts that are not included in the resulting subset.
+ *
+ * @example
+ * // returns ConceptScheme subset of just Pole Vault and its broader concepts (Athletics)
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
+ * return scheme.generateSubset(['https://openactive.io/activity-list#5df80216-2af8-4ad3-8120-a34c11ea1a87']);
+ *
+ * @example
+ * // returns ConceptScheme subset of just Pole Vault and its broader concepts (Athletics), including metadata attached to Pole Vault.
+ * var scheme = new skos.ConceptScheme(activityListJsonObject);
+ * return scheme.generateSubset({'https://openactive.io/activity-list#5df80216-2af8-4ad3-8120-a34c11ea1a87': {'ext:metadata': 34}});
+ *
+ * @param {Object | Array} filter  Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept.
+ * @return {ConceptScheme} the ConceptScheme subset
+ */
+ConceptScheme.prototype.generateSubset = function generateSubset(filter) {
+  // Create a new ConceptScheme based on this one with the filter applied
+  return new ConceptScheme(this._scheme, null, filter);
 };
 
 /**

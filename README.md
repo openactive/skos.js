@@ -64,8 +64,8 @@ without requiring transpiling. It has been tested on IE9 upwards.
 
 * [skos](#module_skos)
     * [~ConceptScheme](#module_skos..ConceptScheme)
-        * [new ConceptScheme(scheme, [id])](#new_module_skos..ConceptScheme_new)
-        * [.getConceptByID(id)](#module_skos..ConceptScheme+getConceptByID) ⇒ <code>Object</code>
+        * [new ConceptScheme(scheme, [id], [filter])](#new_module_skos..ConceptScheme_new)
+        * [.getConceptByID(id)](#module_skos..ConceptScheme+getConceptByID) ⇒ <code>Concept</code>
         * [.getConceptByLabel(label)](#module_skos..ConceptScheme+getConceptByLabel) ⇒ <code>Object</code>
         * [.getAllConcepts()](#module_skos..ConceptScheme+getAllConcepts) ⇒ <code>Array</code>
         * [.getAllConceptsByID()](#module_skos..ConceptScheme+getAllConceptsByID) ⇒ <code>Array</code>
@@ -73,6 +73,7 @@ without requiring transpiling. It has been tested on IE9 upwards.
         * [.getTopConcepts()](#module_skos..ConceptScheme+getTopConcepts) ⇒ <code>Array</code>
         * [.getJSON()](#module_skos..ConceptScheme+getJSON) ⇒ <code>Object</code>
         * [.toString()](#module_skos..ConceptScheme+toString) ⇒ <code>String</code>
+        * [.generateSubset(filter)](#module_skos..ConceptScheme+generateSubset) ⇒ <code>ConceptScheme</code>
     * [~Concept](#module_skos..Concept)
         * [new Concept(concept)](#new_module_skos..Concept_new)
         * _instance_
@@ -94,8 +95,8 @@ without requiring transpiling. It has been tested on IE9 upwards.
 **Access**: public  
 
 * [~ConceptScheme](#module_skos..ConceptScheme)
-    * [new ConceptScheme(scheme, [id])](#new_module_skos..ConceptScheme_new)
-    * [.getConceptByID(id)](#module_skos..ConceptScheme+getConceptByID) ⇒ <code>Object</code>
+    * [new ConceptScheme(scheme, [id], [filter])](#new_module_skos..ConceptScheme_new)
+    * [.getConceptByID(id)](#module_skos..ConceptScheme+getConceptByID) ⇒ <code>Concept</code>
     * [.getConceptByLabel(label)](#module_skos..ConceptScheme+getConceptByLabel) ⇒ <code>Object</code>
     * [.getAllConcepts()](#module_skos..ConceptScheme+getAllConcepts) ⇒ <code>Array</code>
     * [.getAllConceptsByID()](#module_skos..ConceptScheme+getAllConceptsByID) ⇒ <code>Array</code>
@@ -103,10 +104,11 @@ without requiring transpiling. It has been tested on IE9 upwards.
     * [.getTopConcepts()](#module_skos..ConceptScheme+getTopConcepts) ⇒ <code>Array</code>
     * [.getJSON()](#module_skos..ConceptScheme+getJSON) ⇒ <code>Object</code>
     * [.toString()](#module_skos..ConceptScheme+toString) ⇒ <code>String</code>
+    * [.generateSubset(filter)](#module_skos..ConceptScheme+generateSubset) ⇒ <code>ConceptScheme</code>
 
 <a name="new_module_skos..ConceptScheme_new"></a>
 
-#### new ConceptScheme(scheme, [id])
+#### new ConceptScheme(scheme, [id], [filter])
 ConceptScheme constructor.
 
 
@@ -114,6 +116,7 @@ ConceptScheme constructor.
 | --- | --- | --- |
 | scheme | <code>Object</code> \| <code>Array</code> | Either a JSON ConceptScheme object *OR* Array of Concepts |
 | [id] | <code>String</code> | The scheme id, only required if an array is provided for scheme |
+| [filter] | <code>Object</code> \| <code>Array</code> | Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept. Prefer generateSubset() for most use cases. |
 
 **Example**  
 ```js
@@ -131,11 +134,11 @@ return scheme;
 ```
 <a name="module_skos..ConceptScheme+getConceptByID"></a>
 
-#### conceptScheme.getConceptByID(id) ⇒ <code>Object</code>
+#### conceptScheme.getConceptByID(id) ⇒ <code>Concept</code>
 Get Concept by ID
 
 **Kind**: instance method of [<code>ConceptScheme</code>](#module_skos..ConceptScheme)  
-**Returns**: <code>Object</code> - the Concept, or null if no matching concept exists  
+**Returns**: <code>Concept</code> - the Concept, or null if no matching concept exists  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -209,6 +212,32 @@ Return a string rendering the ConceptScheme as Markdown.
 
 **Kind**: instance method of [<code>ConceptScheme</code>](#module_skos..ConceptScheme)  
 **Returns**: <code>String</code> - a Markdown string  
+<a name="module_skos..ConceptScheme+generateSubset"></a>
+
+#### conceptScheme.generateSubset(filter) ⇒ <code>ConceptScheme</code>
+Generate ConceptScheme subset
+
+The subset will be generated to include all broader Concepts of any of those included in the filter, and will have pruned any references to related Concepts that are not included in the resulting subset.
+
+**Kind**: instance method of [<code>ConceptScheme</code>](#module_skos..ConceptScheme)  
+**Returns**: <code>ConceptScheme</code> - the ConceptScheme subset  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| filter | <code>Object</code> \| <code>Array</code> | Filter of ids to be included in the ConceptScheme. Values in the object literal must be true or contain an object of keys which can be assigned on each resulting Concept. |
+
+**Example**  
+```js
+// returns ConceptScheme subset of just Pole Vault and its broader concepts (Athletics)
+var scheme = new skos.ConceptScheme(activityListJsonObject);
+return scheme.generateSubset(['https://openactive.io/activity-list#5df80216-2af8-4ad3-8120-a34c11ea1a87']);
+```
+**Example**  
+```js
+// returns ConceptScheme subset of just Pole Vault and its broader concepts (Athletics), including metadata attached to Pole Vault.
+var scheme = new skos.ConceptScheme(activityListJsonObject);
+return scheme.generateSubset({'https://openactive.io/activity-list#5df80216-2af8-4ad3-8120-a34c11ea1a87': {'ext:metadata': 34}});
+```
 <a name="module_skos..Concept"></a>
 
 ### skos~Concept
