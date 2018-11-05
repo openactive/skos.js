@@ -1,6 +1,6 @@
 {
   "name": "@openactive/skos",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Simple JavaScript library to wrap the OpenActive JSON-LD representation of SKOS.",
   "homepage": "https://github.com/openactive/skos.js#readme",
   "main": "src/skos.js",
