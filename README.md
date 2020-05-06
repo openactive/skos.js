@@ -45,7 +45,7 @@ See the [live demo](https://www.openactive.io/skos.js/demo/).
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/@openactive/skos/dist/skos.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-  $.getJSON('https://www.openactive.io/activity-list/activity-list.jsonld', function(activityListJsonObject) {
+  $.getJSON('https://openactive.io/activity-list/activity-list.jsonld', function(activityListJsonObject) {
     var scheme = new skos.ConceptScheme(activityListJsonObject);
     var labels = scheme.getConceptByLabel('Yoga').getNarrowerTransitive();
     $.each(labels, function(index, concept) {
