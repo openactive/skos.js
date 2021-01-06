@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/%40openactive%2Fskos.svg)](https://badge.fury.io/js/%40openactive%2Fskos)
+[![npm version](https://img.shields.io/npm/v/@openactive/skos)](https://www.npmjs.com/package/@openactive/skos)
 [![Build Status](https://travis-ci.org/openactive/skos.js.svg?branch=master)](https://travis-ci.org/openactive/skos.js)
 [![Coverage Status](https://coveralls.io/repos/github/openactive/skos.js/badge.svg?branch=master)](https://coveralls.io/github/openactive/skos.js?branch=master)
 
