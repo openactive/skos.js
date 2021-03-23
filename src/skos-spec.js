@@ -481,23 +481,29 @@ describe('The filtered scheme', function () {
   });
 
   describe('using a filter array via generateSubset', function () {
+    var scheme = new skos.ConceptScheme(activityList);
+    scheme.generateSubset(['https://openactive.io/activity-list#2']);
     function createInstance() {
-      return new skos.ConceptScheme(activityList, null, ['https://openactive.io/activity-list#1.2']);
+      return scheme.generateSubset(['https://openactive.io/activity-list#1.2']);
     }
     executeFilterTests(createInstance);
   });
 
   describe('using a filter map of boolean via generateSubset', function () {
+    var scheme = new skos.ConceptScheme(activityList);
+    scheme.generateSubset(['https://openactive.io/activity-list#2']);
     function createInstance() {
-      return new skos.ConceptScheme(activityList, null, {'https://openactive.io/activity-list#1.2': true, 'https://openactive.io/activity-list#1': false});
+      return scheme.generateSubset({'https://openactive.io/activity-list#1.2': true, 'https://openactive.io/activity-list#1': false});
     }
     executeFilterTests(createInstance);
   });
 
   describe('using a filter map including objects via generateSubset', function () {
+    var scheme = new skos.ConceptScheme(activityList);
+    scheme.generateSubset(['https://openactive.io/activity-list#2']);
     var metadata = { 'metadata': 'woke' };
     function createInstance() {
-      return new skos.ConceptScheme(activityList, null, {'https://openactive.io/activity-list#1.2': metadata, 'https://openactive.io/activity-list#1': true});
+      return scheme.generateSubset({'https://openactive.io/activity-list#1.2': metadata, 'https://openactive.io/activity-list#1': true});
     }
     executeFilterTests(createInstance);
     executeMetaTests(createInstance, metadata);
