@@ -39,7 +39,7 @@ if (response && response.statusCode == 200) {
 
 ### In the browser
 
-See the [live demo](https://www.openactive.io/skos.js/demo/).
+See the [live demo](https://openactive.io/skos.js/demo/).
 
 ```html
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
