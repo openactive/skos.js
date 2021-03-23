@@ -484,7 +484,7 @@ describe('The filtered scheme', function () {
     var scheme = new skos.ConceptScheme(activityList);
     scheme.generateSubset(['https://openactive.io/activity-list#2']);
     function createInstance() {
-      return scheme.generateSubset(['https://openactive.io/activity-list#1.2']);
+      return scheme.generateSubset(['https://openactive.io/activity-list#1.2', 'unknown']);
     }
     executeFilterTests(createInstance);
   });
@@ -493,7 +493,7 @@ describe('The filtered scheme', function () {
     var scheme = new skos.ConceptScheme(activityList);
     scheme.generateSubset(['https://openactive.io/activity-list#2']);
     function createInstance() {
-      return scheme.generateSubset({'https://openactive.io/activity-list#1.2': true, 'https://openactive.io/activity-list#1': false});
+      return scheme.generateSubset({'https://openactive.io/activity-list#1.2': true, 'https://openactive.io/activity-list#1': false, 'unknown1': true, 'unknown2': false});
     }
     executeFilterTests(createInstance);
   });
@@ -503,7 +503,7 @@ describe('The filtered scheme', function () {
     scheme.generateSubset(['https://openactive.io/activity-list#2']);
     var metadata = { 'metadata': 'woke' };
     function createInstance() {
-      return scheme.generateSubset({'https://openactive.io/activity-list#1.2': metadata, 'https://openactive.io/activity-list#1': true});
+      return scheme.generateSubset({'https://openactive.io/activity-list#1.2': metadata, 'https://openactive.io/activity-list#1': true, 'unknown': true});
     }
     executeFilterTests(createInstance);
     executeMetaTests(createInstance, metadata);
