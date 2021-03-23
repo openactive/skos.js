@@ -160,7 +160,7 @@ describe('The concept 1', function () {
   it('has a narrowerTransitive deduped so of length 4', function () {
     expect(scheme.getConceptByID(oa('1')).getNarrowerTransitive().length).toEqual(4);
   });
-  it('has a narrower deduped so of length 2', function () {
+  it('has a narrower deduped so of length 3', function () {
     expect(scheme.getConceptByID(oa('1')).getNarrower().length).toEqual(3);
   });
   it('is in allConcepts', function () {
@@ -483,6 +483,7 @@ describe('The filtered scheme', function () {
   describe('using a filter array via generateSubset', function () {
     var scheme = new skos.ConceptScheme(activityList);
     scheme.generateSubset(['https://openactive.io/activity-list#2']);
+    scheme.generateSubset(['https://openactive.io/activity-list#1.1']);
     function createInstance() {
       return scheme.generateSubset(['https://openactive.io/activity-list#1.2', 'unknown']);
     }
@@ -492,6 +493,7 @@ describe('The filtered scheme', function () {
   describe('using a filter map of boolean via generateSubset', function () {
     var scheme = new skos.ConceptScheme(activityList);
     scheme.generateSubset(['https://openactive.io/activity-list#2']);
+    scheme.generateSubset(['https://openactive.io/activity-list#1.1']);
     function createInstance() {
       return scheme.generateSubset({'https://openactive.io/activity-list#1.2': true, 'https://openactive.io/activity-list#1': false, 'unknown1': true, 'unknown2': false});
     }
@@ -501,11 +503,32 @@ describe('The filtered scheme', function () {
   describe('using a filter map including objects via generateSubset', function () {
     var scheme = new skos.ConceptScheme(activityList);
     scheme.generateSubset(['https://openactive.io/activity-list#2']);
+    scheme.generateSubset(['https://openactive.io/activity-list#1.1']);
     var metadata = { 'metadata': 'woke' };
     function createInstance() {
       return scheme.generateSubset({'https://openactive.io/activity-list#1.2': metadata, 'https://openactive.io/activity-list#1': true, 'unknown': true});
     }
     executeFilterTests(createInstance);
     executeMetaTests(createInstance, metadata);
+  });
+
+  describe('The ConceptScheme after generateSubset', function () {
+    var scheme;
+    beforeEach(function setupScheme() {
+      var s = new skos.ConceptScheme(activityList);
+      s.generateSubset(['https://openactive.io/activity-list#2']);
+      s.generateSubset(['https://openactive.io/activity-list#1.1']);
+      scheme = s.generateSubset(['https://openactive.io/activity-list#1.2.1']);
+    });
+    it('has one topConcept', function () {
+      var ids = getIds(scheme.getTopConcepts());
+      expect(ids.length).toEqual(1);
+    });
+    it('has #1 with narrowerTransitive deduped so of length 2', function () {
+      expect(scheme.getConceptByID(oa('1')).getNarrowerTransitive().length).toEqual(2);
+    });
+    it('has #1 with narrower deduped so of length 2', function () {
+      expect(scheme.getConceptByID(oa('1')).getNarrower().length).toEqual(2);
+    });
   });
 });

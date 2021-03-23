@@ -60,8 +60,9 @@ function ConceptScheme(scheme, id, filter) {
     filterMap = null;
   }
 
-  // Create processing array for ConceptScheme
+  // Create processing array for ConceptScheme, with a matching map to ensure processing doesn't happen twice
   var conceptArray = [];
+  var conceptMap = {};
 
   // Create master index for Concepts filtered out
   var masterConceptIndex = {};
@@ -79,13 +80,14 @@ function ConceptScheme(scheme, id, filter) {
     if (filterMap === null || filterMap[concept.id]) {
       // Add to array for subsiquent loop
       conceptArray.push(concept);
+      conceptMap[concept.id] = true;
 
       // Add any metadata provided to the filter to the Concept
       if (filterMap !== null && typeof filterMap[concept.id] === 'object') {
         var meta = filterMap[concept.id];
         for (var prop in meta) {
           if (meta.hasOwnProperty(prop)) {
-            concept._originalConcept[prop] = meta[prop];
+            concept._conceptProperties[prop] = meta[prop];
           }
         }
       }
@@ -96,7 +98,7 @@ function ConceptScheme(scheme, id, filter) {
   for (var k = 0; k < conceptArray.length; k++) {
     concept = conceptArray[k];
     var conceptBroaderDupCheck = {};
-    var broader = concept._originalConcept.broader || concept._originalConcept.broaderTransitive || [];
+    var broader = concept._conceptProperties.broader || concept._conceptProperties.broaderTransitive || [];
     if (!Array.isArray(broader)) broader = [broader];
     for (var l = 0; l < broader.length; l++) {
       var broaderConceptId = broader[l];
@@ -106,8 +108,11 @@ function ConceptScheme(scheme, id, filter) {
       } else if (conceptBroaderDupCheck[broaderConceptId] === true) {
         throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has duplicated broader references to "' + broaderConceptId + '"');
       } else {
-        // If the broader reference was not included in the filter, add it to the conceptArray for processing
-        if (filterMap !== null && !filterMap[broaderConceptId]) conceptArray.push(masterConceptIndex[broaderConceptId]);
+        // If the broader reference was not included in the filter, and has not already been added, add it to the conceptArray for processing
+        if (filterMap !== null && !filterMap[broaderConceptId] && !conceptMap[broaderConceptId]) {
+          conceptArray.push(masterConceptIndex[broaderConceptId]);
+          conceptMap[broaderConceptId] = true;
+        }
         // Include reference to broader Concept in this concept
         concept._broaderConcepts.push(masterConceptIndex[broaderConceptId]);
         conceptBroaderDupCheck[broaderConceptId] = true;
@@ -147,15 +152,16 @@ function ConceptScheme(scheme, id, filter) {
     concept = conceptArray[q];
 
     // Add ._relatedConcepts to all Concepts
-    if (concept._originalConcept.related && Array.isArray(concept._originalConcept.related)) {
+    if (concept._conceptProperties.related && Array.isArray(concept._conceptProperties.related)) {
       var conceptRelatedDupCheck = {};
       // Loop through array in reverse to allow for in-loop splicing to prune related
-      var m = concept._originalConcept.related.length;
+      var m = concept._conceptProperties.related.length;
       while (m--) {
-        var relatedConceptId = concept._originalConcept.related[m];
+        var relatedConceptId = concept._conceptProperties.related[m];
         if (!conceptIndex[relatedConceptId] && masterConceptIndex[relatedConceptId]) {
           // Prune the related reference from the concept, as it has been excluded by the filter
-          concept._originalConcept.related.splice(m, 1);
+          concept._conceptProperties.related = concept._conceptProperties.related.slice();
+          concept._conceptProperties.related.splice(m, 1);
         } else if (!conceptIndex[relatedConceptId]) {
           throw new Error('Invalid scheme supplied to ConceptScheme: Concept "' + concept.id + '" has referenced related Concept "' + relatedConceptId + '", which was not found in scheme');
         } else if (conceptRelatedDupCheck[relatedConceptId] === true) {
@@ -182,7 +188,7 @@ function ConceptScheme(scheme, id, filter) {
       'title': this._scheme.title,
       'description': this._scheme.description,
       'license': this._scheme.license,
-      'concept': conceptArray.map(c => c._originalConcept)
+      'concept': conceptArray.map(c => c._conceptProperties)
     };
   }
 
@@ -333,10 +339,16 @@ function Concept(concept) {
   this.definition = concept.definition;
   this._topConceptOf = concept.topConceptOf;
   this._partOfScheme = false;
-  this._originalConcept = concept;
+  this._conceptProperties = concept;
   this._broaderConcepts = [];
   this._narrowerConcepts = [];
   this._relatedConcepts = [];
+  this._conceptProperties = {};
+  for (var prop in concept) {
+    if (concept.hasOwnProperty(prop)) {
+      this._conceptProperties[prop] = concept[prop];
+    }
+  }
 }
 
 /**
@@ -386,7 +398,7 @@ Concept.prototype.getNarrowerTransitive = function getNarrowerTransitive() {
  * @example
  * // returns only the next level up in the hierarchy
  * var scheme = new skos.ConceptScheme(activityListJsonObject);
- * return scheme.getConceptByLabel('Yoga')getBroader();
+ * return scheme.getConceptByLabel('Yoga').getBroader();
  *
  * @return {Array} an array of Concept
  */
@@ -465,7 +477,7 @@ Concept.compare = function compare(a, b) {
  * @return {String} a JSON string
  */
 Concept.prototype.toString = function toString() {
-  return this._originalConcept.prefLabel;
+  return this._conceptProperties.prefLabel;
 };
 
 /**
@@ -474,7 +486,7 @@ Concept.prototype.toString = function toString() {
  * @return {Object} a JSON object
  */
 Concept.prototype.getJSON = function getJSON() {
-  return this._originalConcept;
+  return this._conceptProperties;
 };
 
 var skos = {
