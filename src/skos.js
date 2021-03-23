@@ -36,6 +36,7 @@ function ConceptScheme(scheme, id, filter) {
   if (Array.isArray(scheme)) {
     if (typeof id === 'undefined') throw new Error('ID must be supplied with Concept array');
     this._scheme = {
+      '@context': 'https://openactive.io/',
       'type': 'ConceptScheme',
       'id': id,
       'concept': scheme
@@ -174,7 +175,15 @@ function ConceptScheme(scheme, id, filter) {
 
   // If a filter has been applied, ensure that the scheme is up-to-date
   if (filterMap !== null) {
-    this._scheme.concept = conceptArray.map(c => c._originalConcept);
+    this._scheme = {
+      '@context': 'https://openactive.io/',
+      'type': 'ConceptScheme',
+      'id': this._scheme.id,
+      'title': this._scheme.title,
+      'description': this._scheme.description,
+      'license': this._scheme.license,
+      'concept': conceptArray.map(c => c._originalConcept)
+    };
   }
 
   this._topConcepts = topConcepts.sort(Concept.compare);
