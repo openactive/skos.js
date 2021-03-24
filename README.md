@@ -306,7 +306,7 @@ Get an array of immediately broader concepts.
 ```js
 // returns only the next level up in the hierarchy
 var scheme = new skos.ConceptScheme(activityListJsonObject);
-return scheme.getConceptByLabel('Yoga')getBroader();
+return scheme.getConceptByLabel('Yoga').getBroader();
 ```
 <a name="module_skos..Concept+getBroaderTransitive"></a>
 
