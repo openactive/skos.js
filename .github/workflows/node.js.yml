@@ -23,7 +23,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - run: npm install
-    - run: npm test-on-ci
+    - run: npm run test-on-ci
 
     - name: Upload to Coveralls
       uses: coverallsapp/github-action@master
