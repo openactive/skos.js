@@ -23,10 +23,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - run: npm install
-    - run: npm test
-    
-    - name: Generate Coveralls lcov file
-      run: nyc report --reporter=text-lcov
+    - run: npm test-on-ci
 
     - name: Upload to Coveralls
       uses: coverallsapp/github-action@master
