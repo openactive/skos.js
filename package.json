@@ -10,7 +10,7 @@
     "lint": "eslint \"src/**/*.js\"",
     "lint-fix": "eslint --fix \"src/**/*.js\"",
     "test": "npm run test-no-lint",
-    "test-on-travis": "npm test && nyc report --reporter=text-lcov | coveralls",
+    "test-on-ci": "npm test && mkdir -p ./coverage/ && nyc report --reporter=text-lcov > ./coverage/lcov.info",
     "test-no-lint": "nyc jasmine",
     "test-debug": "node --inspect-brk -i ./node_modules/jasmine/bin/jasmine.js",
     "docs": "jsdoc2md -t jsdoc2md/README.hbs src/skos.js > README.md; echo",
@@ -48,6 +48,6 @@
     "google-closure-compiler": "^20181008.0.0",
     "jasmine": "^3.3.0",
     "jsdoc-to-markdown": "^7.0.0",
-    "nyc": "^13.1.0"
+    "nyc": "^15.1.0"
   }
 }
