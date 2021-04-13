@@ -26,7 +26,7 @@ jobs:
     - run: npm test
     
     - name: Generate Coveralls lcov file
-      run: nyc report --reporter=text-lcov > ./coverage/lcov.info
+      run: nyc report --reporter=text-lcov
 
     - name: Upload to Coveralls
       uses: coverallsapp/github-action@master
