@@ -1,5 +1,5 @@
 [![npm version](https://img.shields.io/npm/v/@openactive/skos)](https://www.npmjs.com/package/@openactive/skos)
-[![Build Status](https://travis-ci.org/openactive/skos.js.svg?branch=master)](https://travis-ci.org/openactive/skos.js)
+[![Tests](https://github.com/openactive/skos.js/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/openactive/skos.js/actions/workflows/node.js.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openactive/skos.js/badge.svg?branch=master)](https://coveralls.io/github/openactive/skos.js?branch=master)
 
 # SKOS.js
